@@ -1,0 +1,2002 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agents Valorant — Terminal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #07070b;
+  --bg-alt: #0c0a13;
+  --panel: #12101c;
+  --panel-alt: #181425;
+  --border: #2b2340;
+  --border-bright: #3d3358;
+  --text: #e4e2ee;
+  --muted: #8b87a0;
+  --neon: #39ff14;
+  --neon-dim: #1f8f0b;
+  --neon-glow: rgba(57, 255, 20, 0.5);
+  --purple: #b026ff;
+  --purple-glow: rgba(176, 38, 255, 0.5);
+  --red: #ff4655;
+  --red-glow: rgba(255, 70, 85, 0.45);
+
+  --font-display: 'Rajdhani', 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Consolas', monospace;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+html, body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  background:
+    radial-gradient(circle at 12% 8%, rgba(176, 38, 255, 0.10), transparent 42%),
+    radial-gradient(circle at 88% 92%, rgba(57, 255, 20, 0.07), transparent 42%),
+    linear-gradient(180deg, var(--bg) 0%, var(--bg-alt) 100%);
+  color: var(--text);
+  font-family: var(--font-display);
+  margin: 0;
+  padding: 0 16px 70px;
+  min-height: 100vh;
+  position: relative;
+}
+
+/* Fine scanline texture over the whole page — subtle, tactical HUD feel */
+.scanlines {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background: repeating-linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.012) 0px,
+    rgba(255, 255, 255, 0.012) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  mix-blend-mode: overlay;
+}
+
+/* ---------- Masthead ---------- */
+
+.masthead {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 36px 8px 18px;
+  position: relative;
+}
+
+.masthead-eyebrow {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 2px;
+  color: var(--neon);
+  text-shadow: 0 0 6px var(--neon-glow);
+  margin-bottom: 6px;
+}
+
+h1 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(2.1rem, 6vw, 3.4rem);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin: 0;
+  color: var(--text);
+}
+
+h1 .accent-dot {
+  color: var(--neon);
+  text-shadow: 0 0 14px var(--neon-glow);
+}
+
+p.subtitle {
+  color: var(--muted);
+  font-size: 1rem;
+  margin: 6px 0 0;
+  font-weight: 500;
+}
+
+/* ---------- Quick nav ---------- */
+
+.quicknav {
+  max-width: 1100px;
+  margin: 0 auto 26px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: rgba(7, 7, 11, 0.85);
+  backdrop-filter: blur(6px);
+  padding: 8px 0;
+}
+
+.quicknav a {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  padding: 7px 14px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  transition: color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.quicknav a:hover {
+  color: var(--neon);
+  border-color: var(--neon);
+  box-shadow: 0 0 10px rgba(57, 255, 20, 0.2);
+}
+
+/* ---------- Scroll-reveal ---------- */
+
+.reveal {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.reveal.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; }
+}
+
+/* ---------- Back to top ---------- */
+
+.back-to-top {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 30;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border-radius: 0;
+  background: var(--panel);
+  border: 1px solid var(--neon);
+  color: var(--neon);
+  font-size: 1rem;
+  text-shadow: 0 0 6px var(--neon-glow);
+  box-shadow: 0 0 12px rgba(57, 255, 20, 0.25);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(10px);
+  transition: opacity 0.25s ease, transform 0.25s ease, box-shadow 0.2s ease, background 0.2s ease, color 0.2s ease;
+  clip-path: none;
+}
+
+.back-to-top.visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.back-to-top:hover {
+  background: var(--neon);
+  color: #000;
+  text-shadow: none;
+  box-shadow: 0 0 18px var(--neon-glow);
+}
+
+/* ---------- Status bar (summary stats) ---------- */
+
+.status-bar {
+  max-width: 1100px;
+  margin: 0 auto 24px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.status-chip {
+  background: var(--panel);
+  padding: 14px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.status-chip:hover {
+  background: var(--panel-alt);
+  transform: translateY(-2px);
+}
+
+.status-label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.status-value {
+  font-family: var(--font-mono);
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--neon);
+  text-shadow: 0 0 8px var(--neon-glow);
+}
+
+/* ---------- HUD frame: corner-bracket panels (signature element) ---------- */
+
+.hud-frame {
+  position: relative;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  padding: 20px 22px;
+}
+
+.hud-frame::before,
+.hud-frame::after,
+.hud-frame .corner-tl,
+.hud-frame .corner-br {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  pointer-events: none;
+}
+
+.hud-frame::before {
+  top: -1px;
+  left: -1px;
+  border-top: 2px solid var(--neon);
+  border-left: 2px solid var(--neon);
+  filter: drop-shadow(0 0 4px var(--neon-glow));
+}
+
+.hud-frame::after {
+  bottom: -1px;
+  right: -1px;
+  border-bottom: 2px solid var(--purple);
+  border-right: 2px solid var(--purple);
+  filter: drop-shadow(0 0 4px var(--purple-glow));
+}
+
+/* ---------- Progress ---------- */
+
+.progress-wrap {
+  max-width: 1100px;
+  margin: 0 auto 22px;
+}
+
+.progress-label {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.5px;
+  color: var(--muted);
+  margin-bottom: 10px;
+  text-transform: uppercase;
+}
+
+#progress-text {
+  color: var(--neon);
+  text-shadow: 0 0 6px var(--neon-glow);
+  font-weight: 700;
+}
+
+.progress-bar-bg {
+  background: #050508;
+  height: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.progress-bar-fill {
+  background: linear-gradient(90deg, var(--neon), var(--purple));
+  box-shadow: 0 0 12px var(--neon-glow), 0 0 20px var(--purple-glow);
+  height: 100%;
+  width: 0%;
+  transition: width 0.35s ease;
+}
+
+/* ---------- Controls ---------- */
+
+.controls {
+  max-width: 1100px;
+  margin: 0 auto 30px;
+  display: flex;
+  gap: 10px;
+}
+
+button {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  background: var(--panel);
+  border: 1px solid var(--neon);
+  color: var(--neon);
+  padding: 10px 22px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  text-shadow: 0 0 6px var(--neon-glow);
+  box-shadow: 0 0 10px rgba(57, 255, 20, 0.2);
+  transition: box-shadow 0.2s ease, background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+}
+
+.controls button:nth-of-type(2) {
+  border-color: var(--purple);
+  color: var(--purple);
+  text-shadow: 0 0 6px var(--purple-glow);
+  box-shadow: 0 0 10px rgba(176, 38, 255, 0.2);
+}
+
+button:hover {
+  background: var(--neon);
+  color: #000000;
+  text-shadow: none;
+  box-shadow: 0 0 18px var(--neon-glow), 0 0 40px rgba(57, 255, 20, 0.3);
+}
+
+.controls button:nth-of-type(2):hover {
+  background: var(--purple);
+  color: #000000;
+  box-shadow: 0 0 18px var(--purple-glow), 0 0 40px rgba(176, 38, 255, 0.35);
+}
+
+.perf-btn {
+  border-color: var(--red) !important;
+  color: var(--red) !important;
+  text-shadow: 0 0 6px var(--red-glow) !important;
+  box-shadow: 0 0 10px rgba(255, 70, 85, 0.2) !important;
+}
+
+.perf-btn:hover {
+  background: var(--red) !important;
+  color: #000000 !important;
+  text-shadow: none !important;
+  box-shadow: 0 0 18px var(--red-glow), 0 0 40px rgba(255, 70, 85, 0.3) !important;
+}
+
+/* ---------- Agent grid ---------- */
+
+.role-block {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--role-color, var(--purple));
+  padding: 16px;
+  transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.role-block:hover {
+  background: var(--panel-alt);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+}
+
+.role-title {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--role-color, var(--purple));
+  text-shadow: 0 0 6px currentColor;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.role-title .role-icon {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+}
+
+.role-title .role-name {
+  flex: 1;
+}
+
+.role-count {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--neon);
+  text-shadow: 0 0 5px var(--neon-glow);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.grid th { display: none; }
+
+.grid td {
+  border: none;
+  border-bottom: 1px solid var(--border);
+  padding: 8px 4px;
+  text-align: left;
+  color: var(--text);
+  font-size: 0.92rem;
+  font-weight: 500;
+}
+
+.grid tr:last-child td { border-bottom: none; }
+
+.grid td:last-child {
+  width: 30px;
+  text-align: right;
+}
+
+.grid tr:hover td {
+  color: var(--neon);
+}
+
+.grid tr.checked td:first-child {
+  color: #4a4756;
+  text-decoration: line-through;
+}
+
+.grid tr.checked:hover td:first-child {
+  color: #4a4756;
+}
+
+input[type="checkbox"] {
+  width: 17px;
+  height: 17px;
+  accent-color: var(--neon);
+  cursor: pointer;
+  filter: drop-shadow(0 0 4px var(--neon-glow));
+}
+
+/* ---------- Match sections ---------- */
+
+.match-section {
+  max-width: 1100px;
+  margin: 0 auto 26px;
+  scroll-margin-top: 70px;
+}
+
+.grid {
+  max-width: 1100px;
+  margin: 0 auto 44px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 18px;
+  scroll-margin-top: 70px;
+}
+
+.section-header {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 18px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+
+.section-index {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--neon);
+  text-shadow: 0 0 6px var(--neon-glow);
+}
+
+.section-header h2 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.15rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin: 0;
+  color: var(--text);
+  flex: 1;
+}
+
+.perf-filter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.perf-filter select {
+  background: #0a0810;
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 6px 10px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.85rem;
+  min-width: 160px;
+}
+
+.perf-filter select:focus {
+  outline: none;
+  border-color: var(--red);
+  box-shadow: 0 0 8px var(--red-glow);
+}
+
+.match-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: end;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.field select,
+.field input[type="number"] {
+  background: #0a0810;
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 9px 10px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.95rem;
+  min-width: 130px;
+}
+
+.field-num select,
+.field-num input {
+  min-width: 80px;
+}
+
+.field select:focus,
+.field input[type="number"]:focus {
+  outline: none;
+  border-color: var(--neon);
+  box-shadow: 0 0 8px var(--neon-glow);
+}
+
+.submit-btn {
+  font-family: var(--font-display);
+  font-weight: 600;
+  background: var(--panel-alt);
+  border: 1px solid var(--neon);
+  color: var(--neon);
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-shadow: 0 0 6px var(--neon-glow);
+  box-shadow: 0 0 10px rgba(57, 255, 20, 0.2);
+  transition: box-shadow 0.2s ease, background 0.2s ease, color 0.2s ease;
+  height: fit-content;
+  clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+}
+
+.submit-btn:hover {
+  background: var(--neon);
+  color: #000000;
+  text-shadow: none;
+  box-shadow: 0 0 18px var(--neon-glow), 0 0 40px rgba(57, 255, 20, 0.3);
+}
+
+/* ---------- Match history table ---------- */
+
+.table-scroll {
+  overflow-x: auto;
+}
+
+.match-table {
+  width: 100%;
+  min-width: 640px;
+  border-collapse: collapse;
+}
+
+.match-table th,
+.match-table td {
+  border-bottom: 1px solid var(--border);
+  padding: 10px 12px;
+  text-align: left;
+  font-size: 0.9rem;
+}
+
+.match-table th {
+  font-family: var(--font-mono);
+  background: var(--panel-alt);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 0.65rem;
+  color: var(--muted);
+}
+
+.match-table td {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.match-table tbody tr:nth-child(even) td {
+  background: rgba(255, 255, 255, 0.015);
+}
+
+.match-table tbody tr:hover td {
+  background: var(--panel-alt);
+}
+
+.match-table .kd-good {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--neon);
+  text-shadow: 0 0 4px var(--neon-glow);
+}
+
+.match-table .kd-bad {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--red);
+  text-shadow: 0 0 4px var(--red-glow);
+}
+
+.match-table .score-cell {
+  font-family: var(--font-mono);
+  font-weight: 600;
+}
+
+.match-table .result-win {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: var(--neon);
+  text-shadow: 0 0 4px var(--neon-glow);
+}
+
+.match-table .result-loss {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: var(--red);
+  text-shadow: 0 0 4px var(--red-glow);
+}
+
+.match-table .result-draw {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.delete-btn {
+  font-family: var(--font-mono);
+  background: transparent;
+  border: 1px solid var(--red);
+  color: var(--red);
+  padding: 5px 10px;
+  cursor: pointer;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-shadow: 0 0 4px var(--red-glow);
+  transition: box-shadow 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+
+.delete-btn:hover {
+  background: var(--red);
+  color: #000000;
+  text-shadow: none;
+  box-shadow: 0 0 14px var(--red-glow);
+}
+
+.empty-state {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-top: 14px;
+  padding: 14px;
+  border: 1px dashed var(--border-bright);
+  text-align: center;
+}
+
+.history-note {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--muted);
+  margin-top: 12px;
+  text-align: right;
+  letter-spacing: 0.3px;
+}
+
+/* ---------- Performance chart ---------- */
+
+.perf-layout {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 22px;
+  align-items: stretch;
+}
+
+.perf-chart-wrap {
+  background: #0a0810;
+  border: 1px solid var(--border);
+  padding: 14px;
+  min-height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#perf-chart {
+  width: 100%;
+  height: 220px;
+  display: block;
+}
+
+#perf-chart .grid-line {
+  stroke: var(--border);
+  stroke-width: 1;
+  stroke-dasharray: 3 4;
+}
+
+#perf-chart .kd-line {
+  fill: none;
+  stroke: var(--neon);
+  stroke-width: 2.5;
+  filter: drop-shadow(0 0 5px var(--neon-glow));
+}
+
+#perf-chart .kd-fill {
+  fill: url(#perfGradient);
+  opacity: 0.35;
+}
+
+#perf-chart .kd-point {
+  fill: var(--bg);
+  stroke: var(--purple);
+  stroke-width: 2;
+  filter: drop-shadow(0 0 4px var(--purple-glow));
+}
+
+#perf-chart .axis-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  fill: var(--muted);
+}
+
+#perf-chart .avg-line {
+  stroke: var(--red);
+  stroke-width: 1;
+  stroke-dasharray: 5 4;
+  opacity: 0.6;
+}
+
+.perf-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+}
+
+.perf-stat-card {
+  background: var(--panel);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  justify-content: center;
+  transition: background 0.2s ease;
+}
+
+.perf-stat-card:hover {
+  background: var(--panel-alt);
+}
+
+.perf-stat-sub {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--muted);
+  letter-spacing: 0.3px;
+  margin-top: 2px;
+}
+
+.perf-up {
+  color: var(--neon) !important;
+  text-shadow: 0 0 8px var(--neon-glow) !important;
+}
+
+.perf-down {
+  color: var(--red) !important;
+  text-shadow: 0 0 8px var(--red-glow) !important;
+}
+
+@media (max-width: 720px) {
+  .perf-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- Top 3 / Flop 3 for selected agent ---------- */
+
+.perf-topflop {
+  margin-top: 22px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+}
+
+.topflop-col {
+  background: var(--panel);
+  padding: 14px 16px;
+}
+
+.topflop-title {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 0 0 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.topflop-title-good {
+  color: var(--neon);
+  text-shadow: 0 0 5px var(--neon-glow);
+}
+
+.topflop-title-bad {
+  color: var(--red);
+  text-shadow: 0 0 5px var(--red-glow);
+}
+
+.topflop-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.topflop-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.topflop-list li:last-child {
+  border-bottom: none;
+}
+
+.topflop-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.topflop-map {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.topflop-mode {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.topflop-kd {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.topflop-kd.kd-good {
+  color: var(--neon);
+  text-shadow: 0 0 4px var(--neon-glow);
+}
+
+.topflop-kd.kd-bad {
+  color: var(--red);
+  text-shadow: 0 0 4px var(--red-glow);
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 640px) {
+  body {
+    padding: 0 12px 60px;
+  }
+
+  .masthead {
+    padding-top: 20px;
+    padding-left: 4px;
+    padding-right: 4px;
+  }
+
+  .masthead-eyebrow {
+    font-size: 0.62rem;
+  }
+
+  /* Quick nav: horizontal scroll strip instead of wrapping */
+  .quicknav {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    margin-left: -12px;
+    margin-right: -12px;
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .quicknav::-webkit-scrollbar { display: none; }
+
+  .quicknav a {
+    flex: 0 0 auto;
+    font-size: 0.65rem;
+    padding: 7px 12px;
+    white-space: nowrap;
+  }
+
+  /* Status bar: 2 columns instead of auto-fit (avoids cramped 4-in-a-row) */
+  .status-bar {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .status-value {
+    font-size: 1.1rem;
+  }
+
+  .hud-frame {
+    padding: 16px 14px;
+  }
+
+  /* Top control buttons: stack full-width instead of squeezing in a row */
+  .controls {
+    flex-direction: column;
+  }
+
+  .controls button {
+    width: 100%;
+    text-align: center;
+  }
+
+  /* Agent role blocks: single column */
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .role-title {
+    flex-wrap: wrap;
+  }
+
+  .section-header {
+    gap: 8px;
+  }
+
+  .section-header h2 {
+    font-size: 1rem;
+  }
+
+  /* Performance filter dropdown takes full width under the title on mobile */
+  .perf-filter {
+    width: 100%;
+  }
+
+  .perf-filter select {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .match-form { flex-direction: column; align-items: stretch; }
+  .field select, .field input[type="number"] { min-width: unset; width: 100%; }
+  .submit-btn { width: 100%; text-align: center; }
+
+  /* Scrollable tables get a touch-friendly momentum scroll + visual hint */
+  .table-scroll {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .perf-stats {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .perf-stat-card {
+    flex: 1 1 45%;
+  }
+
+  .back-to-top {
+    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    right: 16px;
+    width: 40px;
+    height: 40px;
+    font-size: 0.9rem;
+  }
+
+  .perf-topflop {
+    grid-template-columns: 1fr;
+  }
+
+  /* Bigger tap targets on touch screens */
+  input[type="checkbox"] {
+    width: 22px;
+    height: 22px;
+  }
+
+  .grid td {
+    padding: 10px 4px;
+  }
+
+  .delete-btn {
+    padding: 8px 12px;
+    font-size: 0.72rem;
+  }
+
+  .match-table th,
+  .match-table td {
+    padding: 10px 10px;
+    font-size: 0.82rem;
+  }
+
+  .quicknav a {
+    padding: 9px 14px;
+  }
+}
+
+@media (max-width: 400px) {
+  h1 {
+    letter-spacing: 1.5px;
+  }
+
+  .status-bar {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .perf-stat-card {
+    flex: 1 1 100%;
+  }
+}
+
+/* Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; scroll-behavior: auto !important; }
+}
+
+</style>
+</head>
+<body>
+
+<div class="scanlines" aria-hidden="true"></div>
+
+<header class="masthead">
+  <div class="masthead-eyebrow">
+    <span class="eyebrow-tag">// PROTOCOLE.AGENT</span>
+    <span class="eyebrow-tag">V.29</span>
+  </div>
+  <h1>ROSTER<span class="accent-dot">_</span>TRACKER</h1>
+  <p class="subtitle">Verrouille tes agents. Journalise tes affrontements.</p>
+</header>
+
+<nav class="quicknav" aria-label="Navigation rapide">
+  <a href="#grid">01 · Roster</a>
+  <a href="#journal-section">02 · Journal</a>
+  <a href="#history-section">03 · Historique</a>
+  <a href="#perf-section">04 · Performance</a>
+  <a href="#map-stats-section">05 · Cartes</a>
+</nav>
+
+<section class="status-bar reveal" aria-label="Statut de mission">
+  <div class="status-chip">
+    <span class="status-label">Agents déverrouillés</span>
+    <span class="status-value" id="stat-agents">0 / 29</span>
+  </div>
+  <div class="status-chip">
+    <span class="status-label">Parties journalisées</span>
+    <span class="status-value" id="stat-matches">0</span>
+  </div>
+  <div class="status-chip">
+    <span class="status-label">Éliminations totales</span>
+    <span class="status-value" id="stat-kills">0</span>
+  </div>
+  <div class="status-chip">
+    <span class="status-label">Ratio K/D moyen</span>
+    <span class="status-value" id="stat-kd">—</span>
+  </div>
+</section>
+
+<div class="progress-wrap hud-frame">
+  <div class="progress-label">
+    <span>Progression du roster</span>
+    <span id="progress-text">0 / 29</span>
+  </div>
+  <div class="progress-bar-bg">
+    <div class="progress-bar-fill" id="progress-fill"></div>
+  </div>
+</div>
+
+<div class="controls">
+  <button onclick="setAll(true)">Tout déverrouiller</button>
+  <button onclick="setAll(false)">Tout verrouiller</button>
+  <button onclick="document.getElementById('perf-section').scrollIntoView({behavior:'smooth'})" class="perf-btn">Performance</button>
+</div>
+
+<div class="grid reveal" id="grid"></div>
+
+<section class="match-section hud-frame reveal" id="journal-section">
+  <div class="section-header">
+    <span class="section-index">02</span>
+    <h2>Journaliser une partie</h2>
+  </div>
+  <form id="match-form" class="match-form">
+    <div class="field">
+      <label for="match-agent">Agent joué</label>
+      <select id="match-agent" required></select>
+    </div>
+    <div class="field">
+      <label for="match-map">Carte</label>
+      <select id="match-map" required>
+        <option value="Abyss">Abyss</option>
+        <option value="Ascent">Ascent</option>
+        <option value="Bind">Bind</option>
+        <option value="Breeze">Breeze</option>
+        <option value="Corrode">Corrode</option>
+        <option value="Fracture">Fracture</option>
+        <option value="Haven">Haven</option>
+        <option value="Icebox">Icebox</option>
+        <option value="Lotus">Lotus</option>
+        <option value="Pearl">Pearl</option>
+        <option value="Split">Split</option>
+        <option value="Sunset">Sunset</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="match-mode">Mode de jeu</label>
+      <select id="match-mode" required>
+        <option value="Non classé">Non classé</option>
+        <option value="Compétitif">Compétitif</option>
+        <option value="Deathmatch">Deathmatch</option>
+        <option value="Escalade">Escalade</option>
+        <option value="Duel">Duel</option>
+        <option value="Équipe déathmatch">Équipe déathmatch</option>
+        <option value="Spike Rush">Spike Rush</option>
+        <option value="Swiftplay">Swiftplay</option>
+        <option value="Personnalisée">Personnalisée</option>
+      </select>
+    </div>
+    <div class="field field-num">
+      <label for="match-score-team">Score équipe</label>
+      <input type="number" id="match-score-team" min="0" max="99" value="0" inputmode="numeric" required>
+    </div>
+    <div class="field field-num">
+      <label for="match-score-enemy">Score adverse</label>
+      <input type="number" id="match-score-enemy" min="0" max="99" value="0" inputmode="numeric" required>
+    </div>
+    <div class="field field-num">
+      <label for="match-kills">Élim.</label>
+      <input type="number" id="match-kills" min="0" value="0" inputmode="numeric" required>
+    </div>
+    <div class="field field-num">
+      <label for="match-deaths">Morts</label>
+      <input type="number" id="match-deaths" min="0" value="0" inputmode="numeric" required>
+    </div>
+    <div class="field field-num">
+      <label for="match-assists">Assist.</label>
+      <input type="number" id="match-assists" min="0" value="0" inputmode="numeric" required>
+    </div>
+    <button type="submit" class="submit-btn">Ajouter la partie</button>
+  </form>
+</section>
+
+<section class="match-section hud-frame reveal" id="history-section">
+  <div class="section-header">
+    <span class="section-index">03</span>
+    <h2>Historique des parties</h2>
+  </div>
+  <div class="table-scroll">
+    <table class="match-table">
+      <thead>
+        <tr>
+          <th>Agent</th>
+          <th>Carte</th>
+          <th>Mode</th>
+          <th>Score</th>
+          <th>Résultat</th>
+          <th>Élim.</th>
+          <th>Morts</th>
+          <th>Assist.</th>
+          <th>K/D</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="match-history"></tbody>
+    </table>
+  </div>
+  <p id="no-matches" class="empty-state">Aucune partie enregistrée. Journalise ta première manche ci-dessus.</p>
+  <p id="history-note" class="history-note" style="display:none;"></p>
+</section>
+
+<section class="match-section hud-frame reveal" id="perf-section">
+  <div class="section-header">
+    <span class="section-index">04</span>
+    <h2>Performance dans le temps</h2>
+    <div class="perf-filter">
+      <label for="perf-agent-filter">Agent</label>
+      <select id="perf-agent-filter"></select>
+    </div>
+  </div>
+
+  <div class="perf-layout">
+    <div class="perf-chart-wrap">
+      <svg id="perf-chart" viewBox="0 0 600 220" preserveAspectRatio="none" role="img" aria-label="Évolution du ratio K/D au fil des parties"></svg>
+      <p id="perf-empty" class="empty-state">Journalise au moins 2 parties pour voir ta courbe de progression.</p>
+    </div>
+
+    <div class="perf-stats">
+      <div class="perf-stat-card">
+        <span class="status-label">Amélioration</span>
+        <span class="status-value" id="perf-improvement">—</span>
+        <span class="perf-stat-sub" id="perf-improvement-sub">1ère moitié → 2nde moitié, toutes parties</span>
+      </div>
+      <div class="perf-stat-card">
+        <span class="status-label">Meilleur K/D (30 dern.)</span>
+        <span class="status-value" id="perf-best">—</span>
+      </div>
+      <div class="perf-stat-card">
+        <span class="status-label">Pire K/D (30 dern.)</span>
+        <span class="status-value" id="perf-worst">—</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="perf-topflop" id="perf-topflop" style="display:none;">
+    <div class="topflop-col">
+      <h3 class="topflop-title topflop-title-good">Top 3 meilleures parties</h3>
+      <ul class="topflop-list" id="perf-top3"></ul>
+    </div>
+    <div class="topflop-col">
+      <h3 class="topflop-title topflop-title-bad">Top 3 pires parties</h3>
+      <ul class="topflop-list" id="perf-flop3"></ul>
+    </div>
+  </div>
+</section>
+
+<section class="match-section hud-frame reveal" id="map-stats-section">
+  <div class="section-header">
+    <span class="section-index">05</span>
+    <h2>Statistiques par carte</h2>
+  </div>
+  <div class="table-scroll">
+    <table class="match-table">
+      <thead>
+        <tr>
+          <th>Carte</th>
+          <th>Parties</th>
+          <th>Victoires</th>
+          <th>Winrate</th>
+          <th>K/D moyen</th>
+          <th>Élim. moy.</th>
+        </tr>
+      </thead>
+      <tbody id="map-stats-body"></tbody>
+    </table>
+  </div>
+  <p id="map-stats-empty" class="empty-state">Journalise au moins une partie pour voir tes stats par carte.</p>
+</section>
+
+<button id="back-to-top" class="back-to-top" aria-label="Retour en haut" title="Retour en haut">▲</button>
+
+<script>
+const data = {
+  "Duelliste": ["Iso", "Jett", "Neon", "Phoenix", "Raze", "Reyna", "Waylay", "Yoru"],
+  "Initiateur": ["Breach", "Fade", "Gekko", "KAY/O", "Skye", "Sova", "Tejo"],
+  "Contrôleur": ["Astra", "Brimstone", "Clove", "Harbor", "Miks", "Omen", "Viper"],
+  "Sentinelle": ["Chamber", "Cypher", "Deadlock", "Killjoy", "Sage", "Veto", "Vyse"]
+};
+
+const ROLE_COLORS = {
+  "Duelliste": "#ff4655",
+  "Initiateur": "#b026ff",
+  "Contrôleur": "#39ff14",
+  "Sentinelle": "#26c6f0"
+};
+
+const ROLE_ICONS = {
+  "Duelliste": '<svg class="role-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/></svg>',
+  "Initiateur": '<svg class="role-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 L12 12 L20 8"/><circle cx="12" cy="12" r="9"/></svg>',
+  "Contrôleur": '<svg class="role-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15c0-3 2-5 4-5 1 0 2 1 3 1s2-2 4-2 4 2 4 4-2 4-4 4H6c-1 0-2-1-2-2z"/></svg>',
+  "Sentinelle": '<svg class="role-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 L20 6 L20 12 C20 17 16.5 20.5 12 22 C7.5 20.5 4 17 4 12 L4 6 Z"/></svg>'
+};
+
+const STORAGE_KEY_AGENTS = 'valorant_agents_owned';
+const STORAGE_KEY_MATCHES = 'valorant_match_history';
+
+const state = {};
+const total = Object.values(data).flat().length;
+
+const savedState = JSON.parse(localStorage.getItem(STORAGE_KEY_AGENTS) || '{}');
+
+const grid = document.getElementById('grid');
+
+for (const [role, agents] of Object.entries(data)) {
+  const block = document.createElement('div');
+  block.className = 'role-block';
+  block.style.setProperty('--role-color', ROLE_COLORS[role] || '#b026ff');
+
+  const title = document.createElement('div');
+  title.className = 'role-title';
+  title.innerHTML = `${ROLE_ICONS[role] || ''}<span class="role-name">${role}</span><span class="role-count" id="count-${role}">0/${agents.length}</span>`;
+  block.appendChild(title);
+
+  const table = document.createElement('table');
+  const thead = document.createElement('thead');
+  thead.innerHTML = `<tr><th>Agent</th><th>Possédé</th></tr>`;
+  table.appendChild(thead);
+
+  const tbody = document.createElement('tbody');
+
+  agents.forEach(agent => {
+    state[agent] = !!savedState[agent];
+
+    const tr = document.createElement('tr');
+    tr.id = `row-${agent}`;
+    if (state[agent]) tr.classList.add('checked');
+
+    const tdName = document.createElement('td');
+    tdName.textContent = agent;
+
+    const tdCheck = document.createElement('td');
+    const cb = document.createElement('input');
+    cb.type = 'checkbox';
+    cb.checked = state[agent];
+    cb.onchange = () => toggle(agent, role, cb.checked);
+    tdCheck.appendChild(cb);
+
+    tr.appendChild(tdName);
+    tr.appendChild(tdCheck);
+    tbody.appendChild(tr);
+  });
+
+  table.appendChild(tbody);
+  block.appendChild(table);
+  grid.appendChild(block);
+}
+
+function toggle(agent, role, checked) {
+  state[agent] = checked;
+  document.getElementById(`row-${agent}`).classList.toggle('checked', checked);
+  updateCount(role);
+  saveAgentsState();
+  refreshAgentSelect();
+}
+
+function setAll(value) {
+  for (const agent in state) {
+    state[agent] = value;
+    document.getElementById(`row-${agent}`).classList.toggle('checked', value);
+  }
+  document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = value);
+  for (const role in data) updateRoleCount(role);
+  updateGlobalCount();
+  saveAgentsState();
+  refreshAgentSelect();
+}
+
+function saveAgentsState() {
+  localStorage.setItem(STORAGE_KEY_AGENTS, JSON.stringify(state));
+}
+
+for (const role in data) updateRoleCount(role);
+updateGlobalCount();
+
+function updateCount(role) {
+  updateRoleCount(role);
+  updateGlobalCount();
+}
+
+function updateRoleCount(role) {
+  const agents = data[role];
+  const count = agents.filter(a => state[a]).length;
+  document.getElementById(`count-${role}`).textContent = `${count}/${agents.length}`;
+}
+
+function updateGlobalCount() {
+  const count = Object.values(state).filter(Boolean).length;
+  document.getElementById('progress-text').textContent = `${count} / ${total}`;
+  document.getElementById('progress-fill').style.width = `${(count/total)*100}%`;
+  document.getElementById('stat-agents').textContent = `${count} / ${total}`;
+}
+
+function updateStatusBar() {
+  const matchCount = matches.length;
+  const totalKills = matches.reduce((sum, m) => sum + m.kills, 0);
+  const totalDeaths = matches.reduce((sum, m) => sum + m.deaths, 0);
+  const avgKd = totalDeaths === 0
+    ? (totalKills > 0 ? totalKills.toFixed(2) : '—')
+    : (totalKills / totalDeaths).toFixed(2);
+
+  document.getElementById('stat-matches').textContent = matchCount;
+  document.getElementById('stat-kills').textContent = totalKills;
+  document.getElementById('stat-kd').textContent = avgKd;
+}
+
+/* ---------- Section "Ajouter une partie" (Agent + K/D/A) ---------- */
+
+const savedMatches = JSON.parse(localStorage.getItem(STORAGE_KEY_MATCHES) || '[]');
+const matches = savedMatches;
+let matchIdCounter = matches.reduce((max, m) => Math.max(max, m.id), 0);
+
+const agentSelect = document.getElementById('match-agent');
+
+function refreshAgentSelect() {
+  const previousValue = agentSelect.value;
+  agentSelect.innerHTML = '';
+
+  let hasAny = false;
+
+  for (const [role, agents] of Object.entries(data)) {
+    const ownedAgents = agents.filter(a => state[a]);
+    if (ownedAgents.length === 0) continue;
+
+    hasAny = true;
+    const optgroup = document.createElement('optgroup');
+    optgroup.label = role;
+    ownedAgents.forEach(agent => {
+      const opt = document.createElement('option');
+      opt.value = agent;
+      opt.textContent = agent;
+      optgroup.appendChild(opt);
+    });
+    agentSelect.appendChild(optgroup);
+  }
+
+  if (!hasAny) {
+    const opt = document.createElement('option');
+    opt.value = '';
+    opt.textContent = 'Coche d\'abord un agent ci-dessus';
+    opt.disabled = true;
+    opt.selected = true;
+    agentSelect.appendChild(opt);
+  } else if (agentSelect.querySelector(`option[value="${previousValue}"]`)) {
+    agentSelect.value = previousValue;
+  }
+}
+
+refreshAgentSelect();
+
+const matchForm = document.getElementById('match-form');
+const matchHistoryBody = document.getElementById('match-history');
+const noMatchesText = document.getElementById('no-matches');
+const historyNote = document.getElementById('history-note');
+
+matchForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+
+  const agent = document.getElementById('match-agent').value;
+  const map = document.getElementById('match-map').value;
+  const mode = document.getElementById('match-mode').value;
+  const scoreTeam = parseInt(document.getElementById('match-score-team').value, 10) || 0;
+  const scoreEnemy = parseInt(document.getElementById('match-score-enemy').value, 10) || 0;
+  const kills = parseInt(document.getElementById('match-kills').value, 10) || 0;
+  const deaths = parseInt(document.getElementById('match-deaths').value, 10) || 0;
+  const assists = parseInt(document.getElementById('match-assists').value, 10) || 0;
+
+  matchIdCounter += 1;
+  matches.push({ id: matchIdCounter, agent, map, mode, scoreTeam, scoreEnemy, kills, deaths, assists });
+
+  renderMatches();
+  saveMatches();
+  matchForm.reset();
+  document.getElementById('match-score-team').value = 0;
+  document.getElementById('match-score-enemy').value = 0;
+  document.getElementById('match-kills').value = 0;
+  document.getElementById('match-deaths').value = 0;
+  document.getElementById('match-assists').value = 0;
+});
+
+function matchResult(match) {
+  if (match.scoreTeam === undefined || match.scoreEnemy === undefined) return null;
+  if (match.scoreTeam > match.scoreEnemy) return 'Victoire';
+  if (match.scoreTeam < match.scoreEnemy) return 'Défaite';
+  return 'Égalité';
+}
+
+const MAX_VISIBLE_MATCHES = 30;
+
+function renderMatches() {
+  matchHistoryBody.innerHTML = '';
+
+  if (matches.length === 0) {
+    noMatchesText.style.display = 'block';
+    noMatchesText.textContent = 'Aucune partie enregistrée. Journalise ta première manche ci-dessus.';
+  } else {
+    noMatchesText.style.display = 'none';
+  }
+
+  const visibleMatches = matches.slice().reverse().slice(0, MAX_VISIBLE_MATCHES);
+
+  visibleMatches.forEach(match => {
+    const ratio = match.deaths === 0
+      ? match.kills.toFixed(2)
+      : (match.kills / match.deaths).toFixed(2);
+
+    const tr = document.createElement('tr');
+
+    const tdAgent = document.createElement('td');
+    tdAgent.textContent = match.agent;
+
+    const tdMap = document.createElement('td');
+    tdMap.textContent = match.map || '—';
+
+    const tdMode = document.createElement('td');
+    tdMode.textContent = match.mode || '—';
+
+    const tdScore = document.createElement('td');
+    tdScore.className = 'score-cell';
+    tdScore.textContent = (match.scoreTeam !== undefined && match.scoreEnemy !== undefined)
+      ? `${match.scoreTeam} - ${match.scoreEnemy}`
+      : '—';
+
+    const result = matchResult(match);
+    const tdResult = document.createElement('td');
+    if (result) {
+      tdResult.textContent = result;
+      tdResult.className = result === 'Victoire' ? 'result-win' : (result === 'Défaite' ? 'result-loss' : 'result-draw');
+    } else {
+      tdResult.textContent = '—';
+    }
+
+    const tdKills = document.createElement('td');
+    tdKills.textContent = match.kills;
+
+    const tdDeaths = document.createElement('td');
+    tdDeaths.textContent = match.deaths;
+
+    const tdAssists = document.createElement('td');
+    tdAssists.textContent = match.assists;
+
+    const tdRatio = document.createElement('td');
+    tdRatio.textContent = ratio;
+    tdRatio.className = parseFloat(ratio) >= 1 ? 'kd-good' : 'kd-bad';
+
+    const tdDelete = document.createElement('td');
+    const delBtn = document.createElement('button');
+    delBtn.type = 'button';
+    delBtn.className = 'delete-btn';
+    delBtn.textContent = 'Supprimer';
+    delBtn.onclick = () => deleteMatch(match.id);
+    tdDelete.appendChild(delBtn);
+
+    tr.appendChild(tdAgent);
+    tr.appendChild(tdMap);
+    tr.appendChild(tdMode);
+    tr.appendChild(tdScore);
+    tr.appendChild(tdResult);
+    tr.appendChild(tdKills);
+    tr.appendChild(tdDeaths);
+    tr.appendChild(tdAssists);
+    tr.appendChild(tdRatio);
+    tr.appendChild(tdDelete);
+
+    matchHistoryBody.appendChild(tr);
+  });
+
+  if (matches.length > MAX_VISIBLE_MATCHES) {
+    historyNote.style.display = 'block';
+    historyNote.textContent = `Affichage des ${MAX_VISIBLE_MATCHES} parties les plus récentes — ${matches.length} au total (les statistiques ci-dessus tiennent compte de toutes).`;
+  } else {
+    historyNote.style.display = 'none';
+  }
+
+  updateStatusBar();
+  refreshPerfAgentFilter();
+  renderPerformance();
+  renderMapStats();
+}
+
+/* ---------- Performance chart + improvement % (all matches, chronological) ---------- */
+
+const SVG_NS = 'http://www.w3.org/2000/svg';
+const perfChart = document.getElementById('perf-chart');
+const perfEmpty = document.getElementById('perf-empty');
+const perfImprovementEl = document.getElementById('perf-improvement');
+const perfImprovementSub = document.getElementById('perf-improvement-sub');
+const perfBestEl = document.getElementById('perf-best');
+const perfWorstEl = document.getElementById('perf-worst');
+const perfAgentFilter = document.getElementById('perf-agent-filter');
+const perfTopFlopWrap = document.getElementById('perf-topflop');
+const perfTop3List = document.getElementById('perf-top3');
+const perfFlop3List = document.getElementById('perf-flop3');
+
+perfAgentFilter.addEventListener('change', renderPerformance);
+
+function refreshPerfAgentFilter() {
+  const previousValue = perfAgentFilter.value;
+  const playedAgents = [...new Set(matches.map(m => m.agent))].sort();
+
+  perfAgentFilter.innerHTML = '';
+
+  const allOpt = document.createElement('option');
+  allOpt.value = 'all';
+  allOpt.textContent = 'Tous les agents';
+  perfAgentFilter.appendChild(allOpt);
+
+  playedAgents.forEach(agent => {
+    const opt = document.createElement('option');
+    opt.value = agent;
+    opt.textContent = agent;
+    perfAgentFilter.appendChild(opt);
+  });
+
+  if (playedAgents.includes(previousValue) || previousValue === 'all') {
+    perfAgentFilter.value = previousValue;
+  } else {
+    perfAgentFilter.value = 'all';
+  }
+}
+
+const MAX_CHART_MATCHES = 30;
+
+function matchKd(match) {
+  return match.deaths === 0 ? match.kills : match.kills / match.deaths;
+}
+
+function renderPerformance() {
+  perfChart.innerHTML = '';
+
+  const selectedAgent = perfAgentFilter.value || 'all';
+  const scopedMatches = selectedAgent === 'all'
+    ? matches
+    : matches.filter(m => m.agent === selectedAgent);
+
+  if (scopedMatches.length < 2) {
+    perfEmpty.style.display = 'block';
+    perfChart.style.display = 'none';
+    perfEmpty.textContent = selectedAgent === 'all'
+      ? 'Journalise au moins 2 parties pour voir ta courbe de progression.'
+      : `Journalise au moins 2 parties avec ${selectedAgent} pour voir sa courbe de progression.`;
+    perfImprovementEl.textContent = '—';
+    perfImprovementEl.className = 'status-value';
+    perfBestEl.textContent = '—';
+    perfWorstEl.textContent = '—';
+    perfTopFlopWrap.style.display = 'none';
+    return;
+  }
+
+  perfEmpty.style.display = 'none';
+  perfChart.style.display = 'block';
+
+  // scopedMatches is stored in chronological order (oldest first, ids increasing).
+  // The chart shows only a sliding window of the most recent matches,
+  // while the improvement % below always uses the FULL scoped history.
+  const chronological = scopedMatches.slice(-MAX_CHART_MATCHES);
+  const kds = chronological.map(matchKd);
+
+  const maxKd = Math.max(...kds, 1);
+  const minKd = 0;
+
+  const width = 600;
+  const height = 220;
+  const padX = 34;
+  const padTop = 16;
+  const padBottom = 26;
+  const plotW = width - padX * 2;
+  const plotH = height - padTop - padBottom;
+
+  const xFor = (i) => padX + (kds.length === 1 ? plotW / 2 : (i / (kds.length - 1)) * plotW);
+  const yFor = (v) => padTop + plotH - ((v - minKd) / (maxKd - minKd || 1)) * plotH;
+
+  // Gradient def for area fill under the line
+  const defs = document.createElementNS(SVG_NS, 'defs');
+  const gradient = document.createElementNS(SVG_NS, 'linearGradient');
+  gradient.setAttribute('id', 'perfGradient');
+  gradient.setAttribute('x1', '0');
+  gradient.setAttribute('y1', '0');
+  gradient.setAttribute('x2', '0');
+  gradient.setAttribute('y2', '1');
+  const stop1 = document.createElementNS(SVG_NS, 'stop');
+  stop1.setAttribute('offset', '0%');
+  stop1.setAttribute('stop-color', '#39ff14');
+  const stop2 = document.createElementNS(SVG_NS, 'stop');
+  stop2.setAttribute('offset', '100%');
+  stop2.setAttribute('stop-color', '#39ff14');
+  stop2.setAttribute('stop-opacity', '0');
+  gradient.appendChild(stop1);
+  gradient.appendChild(stop2);
+  defs.appendChild(gradient);
+  perfChart.appendChild(defs);
+
+  // Horizontal grid lines (0, 0.5x, 1x max)
+  [0, 0.5, 1].forEach(frac => {
+    const y = padTop + plotH - frac * plotH;
+    const line = document.createElementNS(SVG_NS, 'line');
+    line.setAttribute('class', 'grid-line');
+    line.setAttribute('x1', padX);
+    line.setAttribute('x2', width - padX);
+    line.setAttribute('y1', y);
+    line.setAttribute('y2', y);
+    perfChart.appendChild(line);
+
+    const label = document.createElementNS(SVG_NS, 'text');
+    label.setAttribute('class', 'axis-label');
+    label.setAttribute('x', 4);
+    label.setAttribute('y', y + 3);
+    label.textContent = (frac * maxKd).toFixed(1);
+    perfChart.appendChild(label);
+  });
+
+  // Average K/D dashed reference line
+  const avgKd = kds.reduce((a, b) => a + b, 0) / kds.length;
+  const avgY = yFor(avgKd);
+  const avgLine = document.createElementNS(SVG_NS, 'line');
+  avgLine.setAttribute('class', 'avg-line');
+  avgLine.setAttribute('x1', padX);
+  avgLine.setAttribute('x2', width - padX);
+  avgLine.setAttribute('y1', avgY);
+  avgLine.setAttribute('y2', avgY);
+  perfChart.appendChild(avgLine);
+
+  // Build path + area
+  let pathD = '';
+  let areaD = '';
+  kds.forEach((kd, i) => {
+    const x = xFor(i);
+    const y = yFor(kd);
+    pathD += (i === 0 ? `M ${x} ${y}` : ` L ${x} ${y}`);
+  });
+  areaD = `${pathD} L ${xFor(kds.length - 1)} ${padTop + plotH} L ${xFor(0)} ${padTop + plotH} Z`;
+
+  const area = document.createElementNS(SVG_NS, 'path');
+  area.setAttribute('class', 'kd-fill');
+  area.setAttribute('d', areaD);
+  perfChart.appendChild(area);
+
+  const path = document.createElementNS(SVG_NS, 'path');
+  path.setAttribute('class', 'kd-line');
+  path.setAttribute('d', pathD);
+  perfChart.appendChild(path);
+
+  kds.forEach((kd, i) => {
+    const circle = document.createElementNS(SVG_NS, 'circle');
+    circle.setAttribute('class', 'kd-point');
+    circle.setAttribute('cx', xFor(i));
+    circle.setAttribute('cy', yFor(kd));
+    circle.setAttribute('r', 3.2);
+    const title = document.createElementNS(SVG_NS, 'title');
+    title.textContent = `Partie ${i + 1} — ${chronological[i].agent} — K/D ${kd.toFixed(2)}`;
+    circle.appendChild(title);
+    perfChart.appendChild(circle);
+  });
+
+  // Improvement %: average K/D of first half vs second half, ALL scoped matches ever logged
+  // (independent of the chart's sliding 30-match window above)
+  const allKds = scopedMatches.map(matchKd);
+  const mid = Math.floor(allKds.length / 2);
+  const firstHalf = allKds.slice(0, mid);
+  const secondHalf = allKds.slice(mid);
+  const avgFirst = firstHalf.reduce((a, b) => a + b, 0) / firstHalf.length;
+  const avgSecond = secondHalf.reduce((a, b) => a + b, 0) / secondHalf.length;
+
+  if (avgFirst === 0) {
+    perfImprovementEl.textContent = avgSecond > 0 ? '+100%' : '0%';
+    perfImprovementEl.className = avgSecond > 0 ? 'status-value perf-up' : 'status-value';
+  } else {
+    const change = ((avgSecond - avgFirst) / avgFirst) * 100;
+    const sign = change >= 0 ? '+' : '';
+    perfImprovementEl.textContent = `${sign}${change.toFixed(1)}% ${change >= 0 ? '▲' : '▼'}`;
+    perfImprovementEl.className = `status-value ${change >= 0 ? 'perf-up' : 'perf-down'}`;
+  }
+  perfImprovementSub.textContent = `K/D moy. ${avgFirst.toFixed(2)} → ${avgSecond.toFixed(2)} (${allKds.length} parties au total)`;
+
+  perfBestEl.textContent = Math.max(...kds).toFixed(2);
+  perfWorstEl.textContent = Math.min(...kds).toFixed(2);
+
+  renderTopFlop(selectedAgent, scopedMatches);
+}
+
+function renderTopFlop(selectedAgent, scopedMatches) {
+  if (selectedAgent === 'all' || scopedMatches.length === 0) {
+    perfTopFlopWrap.style.display = 'none';
+    return;
+  }
+
+  perfTopFlopWrap.style.display = 'grid';
+
+  const ranked = scopedMatches
+    .map(m => ({ ...m, kd: matchKd(m) }))
+    .sort((a, b) => b.kd - a.kd);
+
+  const top3 = ranked.slice(0, 3);
+  const flop3 = ranked.slice(-3).reverse();
+
+  const buildItem = (match, kdClass) => {
+    const li = document.createElement('li');
+    li.className = 'topflop-item';
+
+    const meta = document.createElement('div');
+    meta.className = 'topflop-meta';
+
+    const mapLine = document.createElement('span');
+    mapLine.className = 'topflop-map';
+    mapLine.textContent = match.map || '—';
+
+    const modeLine = document.createElement('span');
+    modeLine.className = 'topflop-mode';
+    modeLine.textContent = `${match.mode || '—'} · ${match.kills}/${match.deaths}/${match.assists}`;
+
+    meta.appendChild(mapLine);
+    meta.appendChild(modeLine);
+
+    const kdSpan = document.createElement('span');
+    kdSpan.className = `topflop-kd ${kdClass}`;
+    kdSpan.textContent = match.kd.toFixed(2);
+
+    li.appendChild(meta);
+    li.appendChild(kdSpan);
+    return li;
+  };
+
+  perfTop3List.innerHTML = '';
+  top3.forEach(m => perfTop3List.appendChild(buildItem(m, 'kd-good')));
+
+  perfFlop3List.innerHTML = '';
+  flop3.forEach(m => perfFlop3List.appendChild(buildItem(m, 'kd-bad')));
+}
+
+function deleteMatch(id) {
+  const index = matches.findIndex(m => m.id === id);
+  if (index !== -1) {
+    matches.splice(index, 1);
+    renderMatches();
+    saveMatches();
+  }
+}
+
+function saveMatches() {
+  localStorage.setItem(STORAGE_KEY_MATCHES, JSON.stringify(matches));
+}
+
+/* ---------- Statistiques par carte ---------- */
+
+const mapStatsBody = document.getElementById('map-stats-body');
+const mapStatsEmpty = document.getElementById('map-stats-empty');
+
+function renderMapStats() {
+  mapStatsBody.innerHTML = '';
+
+  if (matches.length === 0) {
+    mapStatsEmpty.style.display = 'block';
+    return;
+  }
+  mapStatsEmpty.style.display = 'none';
+
+  const byMap = {};
+  matches.forEach(match => {
+    if (!match.map) return;
+    const map = match.map;
+    if (!byMap[map]) {
+      byMap[map] = { count: 0, wins: 0, kills: 0, kdSum: 0 };
+    }
+    byMap[map].count += 1;
+    byMap[map].kills += match.kills;
+    byMap[map].kdSum += matchKd(match);
+    if (matchResult(match) === 'Victoire') byMap[map].wins += 1;
+  });
+
+  const rows = Object.entries(byMap).sort((a, b) => b[1].count - a[1].count);
+
+  if (rows.length === 0) {
+    mapStatsEmpty.style.display = 'block';
+    return;
+  }
+
+  rows.forEach(([map, stats]) => {
+    const tr = document.createElement('tr');
+
+    const tdMap = document.createElement('td');
+    tdMap.textContent = map;
+
+    const tdCount = document.createElement('td');
+    tdCount.textContent = stats.count;
+
+    const tdWins = document.createElement('td');
+    tdWins.textContent = stats.wins;
+
+    const winrate = (stats.wins / stats.count) * 100;
+    const tdWinrate = document.createElement('td');
+    tdWinrate.textContent = `${winrate.toFixed(0)}%`;
+    tdWinrate.className = winrate >= 50 ? 'kd-good' : 'kd-bad';
+
+    const avgKd = stats.kdSum / stats.count;
+    const tdAvgKd = document.createElement('td');
+    tdAvgKd.textContent = avgKd.toFixed(2);
+    tdAvgKd.className = avgKd >= 1 ? 'kd-good' : 'kd-bad';
+
+    const tdAvgKills = document.createElement('td');
+    tdAvgKills.textContent = (stats.kills / stats.count).toFixed(1);
+
+    tr.appendChild(tdMap);
+    tr.appendChild(tdCount);
+    tr.appendChild(tdWins);
+    tr.appendChild(tdWinrate);
+    tr.appendChild(tdAvgKd);
+    tr.appendChild(tdAvgKills);
+
+    mapStatsBody.appendChild(tr);
+  });
+}
+
+renderMatches();
+
+/* ---------- Scroll-reveal animations for sections ---------- */
+
+if ('IntersectionObserver' in window) {
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('revealed');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+} else {
+  document.querySelectorAll('.reveal').forEach(el => el.classList.add('revealed'));
+}
+
+/* ---------- Back to top button ---------- */
+
+const backToTopBtn = document.getElementById('back-to-top');
+if (backToTopBtn) {
+  window.addEventListener('scroll', () => {
+    backToTopBtn.classList.toggle('visible', window.scrollY > 500);
+  });
+  backToTopBtn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+}
+
+</script>
+</body>
+</html>
