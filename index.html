@@ -1084,6 +1084,233 @@ input[type="checkbox"] {
   }
 }
 
+/* ---------- Small inline button variant (used in section headers) ---------- */
+
+.small-btn {
+  padding: 6px 14px !important;
+  font-size: 0.75rem !important;
+  clip-path: none !important;
+}
+
+/* ---------- Share button in match history ---------- */
+
+.share-btn {
+  font-family: var(--font-mono);
+  background: transparent;
+  border: 1px solid var(--purple);
+  color: var(--purple);
+  padding: 5px 10px;
+  cursor: pointer;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-shadow: 0 0 4px var(--purple-glow);
+  transition: box-shadow 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+
+.share-btn:hover {
+  background: var(--purple);
+  color: #000000;
+  text-shadow: none;
+  box-shadow: 0 0 14px var(--purple-glow);
+}
+
+/* ---------- Objectives ---------- */
+
+.objective-form-wrap {
+  margin-bottom: 18px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--border);
+}
+
+.objectives-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.objective-card {
+  background: #0a0810;
+  border: 1px solid var(--border);
+  padding: 14px 16px;
+}
+
+.objective-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.objective-label {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text);
+}
+
+.objective-target {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+
+.objective-bar-bg {
+  background: #050508;
+  height: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  margin-bottom: 6px;
+}
+
+.objective-bar-fill {
+  height: 100%;
+  transition: width 0.35s ease;
+}
+
+.objective-bar-fill.ok {
+  background: linear-gradient(90deg, var(--neon), var(--purple));
+  box-shadow: 0 0 10px var(--neon-glow);
+}
+
+.objective-bar-fill.pending {
+  background: linear-gradient(90deg, var(--red), var(--purple));
+  box-shadow: 0 0 10px var(--red-glow);
+}
+
+.objective-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--muted);
+}
+
+.objective-status {
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.objective-status.reached {
+  color: var(--neon);
+  text-shadow: 0 0 5px var(--neon-glow);
+}
+
+/* ---------- Badges ---------- */
+
+.badges-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 14px;
+}
+
+.badge-card {
+  background: #0a0810;
+  border: 1px solid var(--border);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+  text-align: center;
+  opacity: 0.35;
+  filter: grayscale(1);
+  transition: opacity 0.3s ease, filter 0.3s ease, transform 0.2s ease, border-color 0.2s ease;
+}
+
+.badge-card.unlocked {
+  opacity: 1;
+  filter: none;
+  border-color: var(--neon);
+  box-shadow: 0 0 14px rgba(57, 255, 20, 0.12);
+}
+
+.badge-card:hover {
+  transform: translateY(-2px);
+}
+
+.badge-icon {
+  width: 32px;
+  height: 32px;
+  color: var(--neon);
+}
+
+.badge-card:not(.unlocked) .badge-icon {
+  color: var(--muted);
+}
+
+.badge-name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--text);
+}
+
+.badge-desc {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.badge-tier {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border: 1px solid currentColor;
+  align-self: flex-end;
+}
+
+.tier-facile {
+  color: var(--neon);
+  text-shadow: 0 0 4px var(--neon-glow);
+}
+
+.tier-moyen {
+  color: var(--purple);
+  text-shadow: 0 0 4px var(--purple-glow);
+}
+
+.tier-difficile {
+  color: var(--red);
+  text-shadow: 0 0 4px var(--red-glow);
+}
+
+.tier-extreme {
+  color: #ffb800;
+  text-shadow: 0 0 6px rgba(255, 184, 0, 0.6);
+  font-weight: 900;
+}
+
+.badge-card.unlocked .badge-tier.tier-extreme {
+  animation: extreme-pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes extreme-pulse {
+  0%, 100% { text-shadow: 0 0 6px rgba(255, 184, 0, 0.6); }
+  50% { text-shadow: 0 0 14px rgba(255, 184, 0, 0.95); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .badge-card.unlocked .badge-tier.tier-extreme { animation: none; }
+}
+
+/* ---------- Backup ---------- */
+
+.backup-note {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--muted);
+  line-height: 1.5;
+  margin: 0;
+}
+
 @media (max-width: 400px) {
   h1 {
     letter-spacing: 1.5px;
@@ -1103,6 +1330,769 @@ input[type="checkbox"] {
   * { transition: none !important; scroll-behavior: auto !important; }
 }
 
+/* ============================================================
+   VISUEL AMÉLIORÉ — PALETTE CONSERVÉE
+   Aucun changement aux couleurs existantes : uniquement
+   profondeur, hiérarchie, espacements, micro-interactions
+   et responsive.
+   ============================================================ */
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(circle at 8% 5%, rgba(176, 38, 255, 0.10), transparent 36%),
+    radial-gradient(circle at 92% 18%, rgba(57, 255, 20, 0.055), transparent 30%),
+    radial-gradient(circle at 50% 100%, rgba(176, 38, 255, 0.045), transparent 38%),
+    linear-gradient(90deg, transparent 49.9%, rgba(255,255,255,.018) 50%, transparent 50.1%);
+  opacity: .8;
+}
+
+.masthead,
+.quicknav,
+.status-bar,
+.progress-wrap,
+.controls,
+.grid,
+.match-section {
+  position: relative;
+  z-index: 1;
+}
+
+.masthead {
+  padding-top: 48px;
+  padding-bottom: 28px;
+}
+
+.masthead-eyebrow {
+  align-items: center;
+  min-height: 24px;
+}
+
+.eyebrow-tag:last-child {
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  background: rgba(18,16,28,.72);
+}
+
+h1 {
+  line-height: .95;
+  text-shadow: 0 10px 35px rgba(0,0,0,.45);
+}
+
+p.subtitle {
+  max-width: 650px;
+  line-height: 1.55;
+}
+
+.quicknav {
+  border-top: 1px solid rgba(61,51,88,.7);
+  border-bottom: 1px solid rgba(61,51,88,.7);
+  box-shadow: 0 12px 30px rgba(0,0,0,.20);
+}
+
+.quicknav a {
+  position: relative;
+  overflow: hidden;
+  border-radius: 2px;
+  transition:
+    color .2s ease,
+    border-color .2s ease,
+    box-shadow .2s ease,
+    transform .2s ease,
+    background .2s ease;
+}
+
+.quicknav a::after {
+  content: "";
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 3px;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform .2s ease;
+}
+
+.quicknav a:hover {
+  transform: translateY(-1px);
+  background: var(--panel-alt);
+}
+
+.quicknav a:hover::after {
+  transform: scaleX(1);
+}
+
+.status-bar {
+  gap: 1px;
+  box-shadow: 0 14px 35px rgba(0,0,0,.25);
+}
+
+.status-chip {
+  position: relative;
+  min-height: 86px;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.status-chip::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 34px;
+  height: 2px;
+  background: var(--neon);
+  box-shadow: 0 0 10px var(--neon-glow);
+  opacity: .75;
+}
+
+.status-chip:nth-child(2)::before {
+  background: var(--purple);
+  box-shadow: 0 0 10px var(--purple-glow);
+}
+
+.status-chip:nth-child(3)::before {
+  background: var(--red);
+  box-shadow: 0 0 10px var(--red-glow);
+}
+
+.status-value {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.3px;
+}
+
+.progress-wrap {
+  padding: 22px 24px;
+  margin-bottom: 28px;
+  box-shadow: 0 14px 35px rgba(0,0,0,.22);
+}
+
+.progress-bar-bg {
+  height: 10px;
+}
+
+.progress-bar-fill {
+  position: relative;
+}
+
+.progress-bar-fill::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.16), transparent);
+  transform: translateX(-100%);
+  animation: progress-sheen 2.8s ease-in-out infinite;
+}
+
+@keyframes progress-sheen {
+  0%, 45% { transform: translateX(-100%); }
+  70%, 100% { transform: translateX(100%); }
+}
+
+.controls {
+  align-items: center;
+  margin-bottom: 34px;
+}
+
+.controls button,
+.submit-btn,
+.small-btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.controls button::before,
+.submit-btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, transparent 25%, rgba(255,255,255,.10) 50%, transparent 75%);
+  transform: translateX(-120%);
+  transition: transform .45s ease;
+  pointer-events: none;
+}
+
+.controls button:hover::before,
+.submit-btn:hover::before {
+  transform: translateX(120%);
+}
+
+.grid {
+  gap: 20px;
+  margin-bottom: 52px;
+}
+
+.role-block {
+  position: relative;
+  overflow: hidden;
+  padding: 18px;
+  box-shadow: 0 10px 28px rgba(0,0,0,.18);
+}
+
+.role-block::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(135deg, rgba(255,255,255,.025), transparent 42%);
+}
+
+.role-block:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 12px 28px rgba(0,0,0,.32),
+    0 0 0 1px rgba(255,255,255,.015);
+}
+
+.role-block:hover .role-title {
+  text-shadow: 0 0 10px currentColor;
+}
+
+.role-title {
+  margin-bottom: 14px;
+  padding-bottom: 11px;
+  transition: text-shadow .2s ease;
+}
+
+.grid td {
+  padding: 10px 6px;
+  transition: color .18s ease, padding-left .18s ease;
+}
+
+.grid tr:hover td {
+  color: var(--neon);
+}
+
+.grid tr:hover td:first-child {
+  padding-left: 9px;
+}
+
+.grid tr.checked td:first-child {
+  text-decoration-thickness: 1px;
+}
+
+input[type="checkbox"] {
+  transition: transform .18s ease, filter .18s ease;
+}
+
+input[type="checkbox"]:hover {
+  transform: scale(1.08);
+}
+
+.hud-frame {
+  box-shadow: 0 16px 38px rgba(0,0,0,.22);
+}
+
+.hud-frame::before,
+.hud-frame::after {
+  transition: width .25s ease, height .25s ease, filter .25s ease;
+}
+
+.hud-frame:hover::before,
+.hud-frame:hover::after {
+  width: 22px;
+  height: 22px;
+}
+
+.match-section {
+  margin-bottom: 30px;
+}
+
+.section-header {
+  margin-bottom: 22px;
+  padding-bottom: 12px;
+}
+
+.section-index {
+  min-width: 30px;
+}
+
+.section-header h2 {
+  line-height: 1.15;
+}
+
+.field select,
+.field input[type="number"],
+.perf-filter select,
+.objective-card,
+.badge-card,
+.perf-chart-wrap {
+  border-radius: 2px;
+}
+
+.field select,
+.field input[type="number"],
+.perf-filter select {
+  min-height: 42px;
+  transition:
+    border-color .2s ease,
+    box-shadow .2s ease,
+    background .2s ease,
+    transform .2s ease;
+}
+
+.field select:hover,
+.field input[type="number"]:hover,
+.perf-filter select:hover {
+  background: var(--panel);
+  border-color: var(--border-bright);
+}
+
+.field select:focus,
+.field input[type="number"]:focus {
+  transform: translateY(-1px);
+}
+
+.match-form {
+  gap: 16px;
+}
+
+.submit-btn {
+  min-height: 42px;
+}
+
+.table-scroll {
+  border: 1px solid var(--border);
+  background: #0a0810;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.018);
+}
+
+.match-table {
+  border: none;
+}
+
+.match-table th,
+.match-table td {
+  padding: 12px 13px;
+}
+
+.match-table th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  box-shadow: 0 1px 0 var(--border);
+}
+
+.match-table td.score-cell,
+.match-table td:nth-child(6),
+.match-table td:nth-child(7),
+.match-table td:nth-child(8),
+.match-table td.kd-good,
+.match-table td.kd-bad {
+  font-variant-numeric: tabular-nums;
+}
+
+.match-table tbody tr {
+  transition: background .18s ease, transform .18s ease;
+}
+
+.match-table tbody tr:hover td {
+  background: var(--panel-alt);
+}
+
+.match-table .score-cell {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  letter-spacing: .5px;
+}
+
+.share-btn,
+.delete-btn {
+  white-space: nowrap;
+  transition:
+    box-shadow .2s ease,
+    background .2s ease,
+    color .2s ease,
+    transform .18s ease;
+}
+
+.share-btn:hover,
+.delete-btn:hover {
+  transform: translateY(-1px);
+}
+
+.perf-layout {
+  gap: 18px;
+}
+
+.perf-chart-wrap {
+  position: relative;
+  min-height: 250px;
+  padding: 18px;
+  box-shadow: inset 0 0 30px rgba(0,0,0,.14);
+}
+
+#perf-chart {
+  height: 240px;
+}
+
+.perf-stats {
+  box-shadow: 0 10px 28px rgba(0,0,0,.20);
+}
+
+.perf-stat-card {
+  position: relative;
+  overflow: hidden;
+  min-height: 78px;
+}
+
+.perf-stat-card::after {
+  content: "";
+  position: absolute;
+  right: -22px;
+  bottom: -28px;
+  width: 90px;
+  height: 90px;
+  border: 1px solid var(--border);
+  transform: rotate(45deg);
+  opacity: .35;
+}
+
+.perf-topflop {
+  margin-top: 20px;
+}
+
+.topflop-col {
+  transition: background .2s ease;
+}
+
+.topflop-col:hover {
+  background: var(--panel-alt);
+}
+
+.topflop-item {
+  padding: 9px 2px;
+}
+
+.objective-card,
+.badge-card {
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 22px rgba(0,0,0,.16);
+  transition:
+    transform .2s ease,
+    border-color .2s ease,
+    box-shadow .2s ease,
+    background .2s ease;
+}
+
+.objective-card:hover {
+  transform: translateY(-2px);
+  background: var(--panel);
+  border-color: var(--border-bright);
+}
+
+.objective-bar-bg {
+  height: 10px;
+}
+
+.badges-grid {
+  gap: 16px;
+}
+
+.badge-card {
+  min-height: 170px;
+  justify-content: center;
+}
+
+.badge-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--border-bright);
+  box-shadow: 0 12px 26px rgba(0,0,0,.24);
+}
+
+.badge-card.unlocked:hover {
+  border-color: var(--neon);
+  box-shadow: 0 12px 30px rgba(0,0,0,.28), 0 0 16px rgba(57,255,20,.10);
+}
+
+.badge-icon {
+  width: 38px;
+  height: 38px;
+  filter: drop-shadow(0 0 5px currentColor);
+}
+
+/* Locked badges get a small lock cue instead of reading as "broken" */
+.badge-card:not(.unlocked) {
+  position: relative;
+}
+
+.badge-card:not(.unlocked)::before {
+  content: '🔒';
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 0.7rem;
+  opacity: .6;
+  filter: grayscale(1);
+}
+
+.backup-note {
+  max-width: 800px;
+}
+
+.back-to-top {
+  backdrop-filter: blur(8px);
+}
+
+/* ---------- Accessible keyboard focus (kept in the HUD language) ---------- */
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--neon);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(57, 255, 20, 0.18);
+}
+
+.perf-btn:focus-visible,
+.delete-btn:focus-visible {
+  outline-color: var(--red);
+  box-shadow: 0 0 0 4px rgba(255, 70, 85, 0.18) !important;
+}
+
+.share-btn:focus-visible {
+  outline-color: var(--purple);
+  box-shadow: 0 0 0 4px rgba(176, 38, 255, 0.18);
+}
+
+input[type="checkbox"]:focus-visible {
+  outline-offset: 3px;
+}
+
+@media (max-width: 900px) {
+  .status-bar {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .perf-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .masthead {
+    padding-top: 28px;
+    padding-bottom: 20px;
+  }
+
+  h1 {
+    font-size: clamp(2rem, 12vw, 3rem);
+  }
+
+  .status-chip {
+    min-height: 78px;
+    padding: 12px 14px;
+  }
+
+  .progress-wrap {
+    padding: 18px 16px;
+  }
+
+  .grid {
+    gap: 14px;
+    margin-bottom: 38px;
+  }
+
+  .role-block {
+    padding: 16px;
+  }
+
+  .hud-frame {
+    box-shadow: 0 10px 26px rgba(0,0,0,.20);
+  }
+
+  .section-header {
+    align-items: center;
+  }
+
+  .match-section {
+    margin-bottom: 22px;
+  }
+
+  .perf-chart-wrap {
+    min-height: 210px;
+    padding: 10px;
+  }
+
+  #perf-chart {
+    height: 205px;
+  }
+
+  .badge-card {
+    min-height: 150px;
+  }
+}
+
+/* ============================================================
+   MOBILE — PASSE V29.2
+   Cibles tactiles plus grandes, pas de zoom iOS sur les champs,
+   indice visuel de défilement horizontal, grille de badges plus
+   dense, respect des zones sûres (encoche / barre de gestes).
+   Toujours la même palette.
+   ============================================================ */
+
+@media (max-width: 640px) {
+  /* iOS zoome automatiquement si un champ a un font-size < 16px au focus */
+  .field select,
+  .field input[type="number"],
+  .field input[type="text"],
+  .perf-filter select {
+    font-size: 16px;
+  }
+
+  /* Cibles tactiles confortables (recommandation ~44px) */
+  button,
+  .submit-btn,
+  .delete-btn,
+  .share-btn,
+  .small-btn,
+  .quicknav a {
+    min-height: 44px;
+  }
+
+  .delete-btn,
+  .share-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  input[type="checkbox"] {
+    width: 24px;
+    height: 24px;
+  }
+
+  /* En-tête : évite que l'étiquette de version ne colle au libellé */
+  .masthead-eyebrow {
+    flex-wrap: wrap;
+    gap: 6px;
+    row-gap: 4px;
+  }
+
+  p.subtitle {
+    font-size: 0.92rem;
+  }
+
+  /* Cartes HUD : coins moins imposants sur petit écran */
+  .hud-frame::before,
+  .hud-frame::after {
+    width: 12px;
+    height: 12px;
+  }
+
+  /* Tableaux scrollables : indice visuel qu'il y a du contenu caché à droite */
+  .table-scroll {
+    position: relative;
+    -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 22px), transparent 100%);
+    mask-image: linear-gradient(90deg, #000 calc(100% - 22px), transparent 100%);
+  }
+
+  .table-scroll:active,
+  .table-scroll:focus-within {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  /* Objectifs : bouton Supprimer ne doit pas écraser le libellé */
+  .objective-top {
+    flex-wrap: wrap;
+  }
+
+  .objective-label {
+    flex: 1 1 100%;
+  }
+
+  /* Badges : deux colonnes plutôt qu'une seule, cartes plus compactes */
+  .badges-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .badge-card {
+    min-height: 132px;
+    padding: 12px 10px;
+    gap: 4px;
+  }
+
+  .badge-icon {
+    width: 28px;
+    height: 28px;
+  }
+
+  .badge-name {
+    font-size: 0.78rem;
+  }
+
+  .badge-desc {
+    font-size: 0.62rem;
+  }
+
+  .badge-tier {
+    font-size: 0.56rem;
+    padding: 2px 6px;
+  }
+
+  /* Statuts en fin de partie (résultat / K-D) : lisibles sans être écrasés */
+  .match-table .result-win,
+  .match-table .result-loss,
+  .match-table .result-draw {
+    white-space: nowrap;
+  }
+
+  /* Bouton retour en haut : au-dessus des zones sûres (encoche / geste) */
+  .back-to-top {
+    bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+    right: calc(16px + env(safe-area-inset-right, 0px));
+  }
+
+  body {
+    padding-left: calc(12px + env(safe-area-inset-left, 0px));
+    padding-right: calc(12px + env(safe-area-inset-right, 0px));
+  }
+}
+
+@media (max-width: 400px) {
+  .badges-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .status-value {
+    font-size: 1rem;
+  }
+
+  .perf-stat-card {
+    min-height: 66px;
+    padding: 12px;
+  }
+
+  .topflop-item {
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .progress-bar-fill::after {
+    animation: none;
+  }
+
+  .role-block:hover,
+  .badge-card:hover,
+  .objective-card:hover,
+  .share-btn:hover,
+  .delete-btn:hover {
+    transform: none;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -1112,7 +2102,7 @@ input[type="checkbox"] {
 <header class="masthead">
   <div class="masthead-eyebrow">
     <span class="eyebrow-tag">// PROTOCOLE.AGENT</span>
-    <span class="eyebrow-tag">V.29</span>
+    <span class="eyebrow-tag">V.29.2</span>
   </div>
   <h1>ROSTER<span class="accent-dot">_</span>TRACKER</h1>
   <p class="subtitle">Verrouille tes agents. Journalise tes affrontements.</p>
@@ -1124,6 +2114,9 @@ input[type="checkbox"] {
   <a href="#history-section">03 · Historique</a>
   <a href="#perf-section">04 · Performance</a>
   <a href="#map-stats-section">05 · Cartes</a>
+  <a href="#objectives-section">06 · Objectifs</a>
+  <a href="#badges-section">07 · Badges</a>
+  <a href="#backup-section">08 · Sauvegarde</a>
 </nav>
 
 <section class="status-bar reveal" aria-label="Statut de mission">
@@ -1248,6 +2241,7 @@ input[type="checkbox"] {
           <th>Assist.</th>
           <th>K/D</th>
           <th></th>
+          <th></th>
         </tr>
       </thead>
       <tbody id="match-history"></tbody>
@@ -1325,7 +2319,58 @@ input[type="checkbox"] {
   <p id="map-stats-empty" class="empty-state">Journalise au moins une partie pour voir tes stats par carte.</p>
 </section>
 
+<section class="match-section hud-frame reveal" id="objectives-section">
+  <div class="section-header">
+    <span class="section-index">06</span>
+    <h2>Objectifs personnels</h2>
+    <button type="button" class="perf-btn small-btn" id="add-objective-btn">+ Nouvel objectif</button>
+  </div>
+
+  <div id="objectives-form-wrap" class="objective-form-wrap" style="display:none;">
+    <form id="objective-form" class="match-form">
+      <div class="field" style="flex:2; min-width:200px;">
+        <label for="obj-label">Description</label>
+        <input type="text" id="obj-label" placeholder="Ex : Atteindre 1.2 K/D moyen" required>
+      </div>
+      <div class="field field-num">
+        <label for="obj-target">Cible (K/D)</label>
+        <input type="number" id="obj-target" min="0" step="0.1" value="1.0" inputmode="decimal" required>
+      </div>
+      <button type="submit" class="submit-btn">Créer</button>
+      <button type="button" class="delete-btn" id="cancel-objective-btn">Annuler</button>
+    </form>
+  </div>
+
+  <div id="objectives-list" class="objectives-list"></div>
+  <p id="objectives-empty" class="empty-state">Aucun objectif défini. Crée-en un pour suivre ta progression vers un K/D cible.</p>
+</section>
+
+<section class="match-section hud-frame reveal" id="badges-section">
+  <div class="section-header">
+    <span class="section-index">07</span>
+    <h2>Badges & succès</h2>
+    <span class="status-label" id="badges-count">0 / 0</span>
+  </div>
+  <div class="badges-grid" id="badges-grid"></div>
+</section>
+
+<section class="match-section hud-frame reveal" id="backup-section">
+  <div class="section-header">
+    <span class="section-index">08</span>
+    <h2>Sauvegarde des données</h2>
+  </div>
+  <p class="backup-note">Tes données sont stockées uniquement dans ce navigateur. Exporte-les pour les garder en sécurité ou les transférer sur un autre appareil.</p>
+  <div class="controls" style="margin: 14px 0 0;">
+    <button type="button" id="export-json-btn">Exporter (JSON)</button>
+    <button type="button" id="import-json-btn" class="perf-btn">Importer un fichier</button>
+    <input type="file" id="import-json-input" accept=".json,application/json" style="display:none;">
+  </div>
+  <p id="import-status" class="history-note" style="display:none;"></p>
+</section>
+
 <button id="back-to-top" class="back-to-top" aria-label="Retour en haut" title="Retour en haut">▲</button>
+
+<canvas id="share-canvas" width="1000" height="562" style="display:none;"></canvas>
 
 <script>
 const data = {
@@ -1409,6 +2454,7 @@ function toggle(agent, role, checked) {
   updateCount(role);
   saveAgentsState();
   refreshAgentSelect();
+  if (typeof renderBadges === 'function') renderBadges();
 }
 
 function setAll(value) {
@@ -1421,6 +2467,7 @@ function setAll(value) {
   updateGlobalCount();
   saveAgentsState();
   refreshAgentSelect();
+  if (typeof renderBadges === 'function') renderBadges();
 }
 
 function saveAgentsState() {
@@ -1542,7 +2589,7 @@ function matchResult(match) {
   return 'Égalité';
 }
 
-const MAX_VISIBLE_MATCHES = 30;
+const MAX_VISIBLE_MATCHES = 10;
 
 function renderMatches() {
   matchHistoryBody.innerHTML = '';
@@ -1600,6 +2647,14 @@ function renderMatches() {
     tdRatio.textContent = ratio;
     tdRatio.className = parseFloat(ratio) >= 1 ? 'kd-good' : 'kd-bad';
 
+    const tdShare = document.createElement('td');
+    const shareBtn = document.createElement('button');
+    shareBtn.type = 'button';
+    shareBtn.className = 'share-btn';
+    shareBtn.textContent = 'Partager';
+    shareBtn.onclick = () => shareMatchAsImage(match, ratio, result);
+    tdShare.appendChild(shareBtn);
+
     const tdDelete = document.createElement('td');
     const delBtn = document.createElement('button');
     delBtn.type = 'button';
@@ -1617,6 +2672,7 @@ function renderMatches() {
     tr.appendChild(tdDeaths);
     tr.appendChild(tdAssists);
     tr.appendChild(tdRatio);
+    tr.appendChild(tdShare);
     tr.appendChild(tdDelete);
 
     matchHistoryBody.appendChild(tr);
@@ -1633,6 +2689,8 @@ function renderMatches() {
   refreshPerfAgentFilter();
   renderPerformance();
   renderMapStats();
+  if (typeof renderObjectives === 'function') renderObjectives();
+  if (typeof renderBadges === 'function') renderBadges();
 }
 
 /* ---------- Performance chart + improvement % (all matches, chronological) ---------- */
@@ -1967,8 +3025,6 @@ function renderMapStats() {
   });
 }
 
-renderMatches();
-
 /* ---------- Scroll-reveal animations for sections ---------- */
 
 if ('IntersectionObserver' in window) {
@@ -1997,6 +3053,802 @@ if (backToTopBtn) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 }
+
+/* ================================================================
+   PARTAGE D'UNE PARTIE EN IMAGE (Discord / Twitter)
+   ================================================================ */
+
+function shareMatchAsImage(match, ratio, result) {
+  const canvas = document.getElementById('share-canvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width;
+  const H = canvas.height;
+
+  // Background
+  const bgGrad = ctx.createLinearGradient(0, 0, W, H);
+  bgGrad.addColorStop(0, '#07070b');
+  bgGrad.addColorStop(1, '#0c0a13');
+  ctx.fillStyle = bgGrad;
+  ctx.fillRect(0, 0, W, H);
+
+  // Radial glows
+  const glow1 = ctx.createRadialGradient(W * 0.1, H * 0.1, 0, W * 0.1, H * 0.1, 400);
+  glow1.addColorStop(0, 'rgba(176,38,255,0.18)');
+  glow1.addColorStop(1, 'rgba(176,38,255,0)');
+  ctx.fillStyle = glow1;
+  ctx.fillRect(0, 0, W, H);
+
+  const glow2 = ctx.createRadialGradient(W * 0.9, H * 0.9, 0, W * 0.9, H * 0.9, 400);
+  glow2.addColorStop(0, 'rgba(57,255,20,0.14)');
+  glow2.addColorStop(1, 'rgba(57,255,20,0)');
+  ctx.fillStyle = glow2;
+  ctx.fillRect(0, 0, W, H);
+
+  // Corner brackets (HUD frame)
+  ctx.strokeStyle = '#39ff14';
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(20, 50); ctx.lineTo(20, 20); ctx.lineTo(50, 20);
+  ctx.stroke();
+
+  ctx.strokeStyle = '#b026ff';
+  ctx.beginPath();
+  ctx.moveTo(W - 50, H - 20); ctx.lineTo(W - 20, H - 20); ctx.lineTo(W - 20, H - 50);
+  ctx.stroke();
+
+  // Eyebrow
+  ctx.fillStyle = '#39ff14';
+  ctx.font = '600 16px "JetBrains Mono", monospace';
+  ctx.textBaseline = 'alphabetic';
+  ctx.fillText('// PROTOCOLE.AGENT — RAPPORT DE PARTIE', 50, 55);
+
+  // Agent name (big title)
+  ctx.fillStyle = '#e4e2ee';
+  ctx.font = '700 64px "Rajdhani", sans-serif';
+  ctx.fillText(match.agent.toUpperCase(), 50, 140);
+
+  // Map · Mode
+  ctx.fillStyle = '#8b87a0';
+  ctx.font = '600 24px "Rajdhani", sans-serif';
+  ctx.fillText(`${match.map || '—'} · ${match.mode || '—'}`, 50, 180);
+
+  // Result badge
+  if (result) {
+    const resultColor = result === 'Victoire' ? '#39ff14' : (result === 'Défaite' ? '#ff4655' : '#8b87a0');
+    ctx.fillStyle = resultColor;
+    ctx.font = '700 28px "JetBrains Mono", monospace';
+    ctx.fillText(result.toUpperCase(), 50, 225);
+
+    if (match.scoreTeam !== undefined && match.scoreEnemy !== undefined) {
+      ctx.fillStyle = '#8b87a0';
+      ctx.font = '600 24px "JetBrains Mono", monospace';
+      ctx.fillText(`${match.scoreTeam} - ${match.scoreEnemy}`, 260, 225);
+    }
+  }
+
+  // Stat blocks: K / D / A / Ratio
+  const stats = [
+    { label: 'ÉLIMINATIONS', value: match.kills, color: '#e4e2ee' },
+    { label: 'MORTS', value: match.deaths, color: '#e4e2ee' },
+    { label: 'ASSISTANCES', value: match.assists, color: '#e4e2ee' },
+    { label: 'RATIO K/D', value: ratio, color: parseFloat(ratio) >= 1 ? '#39ff14' : '#ff4655' }
+  ];
+
+  const blockW = (W - 100) / 4;
+  stats.forEach((stat, i) => {
+    const x = 50 + i * blockW;
+    const y = 320;
+
+    ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(x, y - 90, blockW - 16, 110);
+
+    ctx.fillStyle = '#8b87a0';
+    ctx.font = '600 14px "JetBrains Mono", monospace';
+    ctx.fillText(stat.label, x + 16, y - 55);
+
+    ctx.fillStyle = stat.color;
+    ctx.font = '700 42px "JetBrains Mono", monospace';
+    ctx.fillText(String(stat.value), x + 16, y - 10);
+  });
+
+  // Footer
+  ctx.fillStyle = '#8b87a0';
+  ctx.font = '500 16px "JetBrains Mono", monospace';
+  ctx.fillText('ROSTER_TRACKER — Généré depuis mon tracker Valorant', 50, H - 40);
+
+  // Trigger download
+  canvas.toBlob((blob) => {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `valorant-${match.agent.toLowerCase()}-${match.map || 'partie'}.png`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }, 'image/png');
+}
+
+/* ================================================================
+   IMPORT / EXPORT JSON (sauvegarde et transfert entre appareils)
+   ================================================================ */
+
+const exportBtn = document.getElementById('export-json-btn');
+const importBtn = document.getElementById('import-json-btn');
+const importInput = document.getElementById('import-json-input');
+const importStatus = document.getElementById('import-status');
+
+if (exportBtn) {
+  exportBtn.addEventListener('click', () => {
+    const payload = {
+      exportedAt: new Date().toISOString(),
+      version: 1,
+      agents: state,
+      matches: matches,
+      objectives: objectives
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    const dateStr = new Date().toISOString().slice(0, 10);
+    a.download = `roster-tracker-sauvegarde-${dateStr}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+}
+
+if (importBtn && importInput) {
+  importBtn.addEventListener('click', () => importInput.click());
+
+  importInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const data = JSON.parse(event.target.result);
+
+        if (!data || typeof data !== 'object') {
+          throw new Error('Format invalide');
+        }
+
+        const confirmed = confirm(
+          'Importer ce fichier remplacera TOUTES tes données actuelles (agents, historique, objectifs). Continuer ?'
+        );
+        if (!confirmed) return;
+
+        // Restore agents
+        if (data.agents && typeof data.agents === 'object') {
+          Object.keys(state).forEach(agent => { state[agent] = false; });
+          Object.entries(data.agents).forEach(([agent, owned]) => {
+            if (agent in state) state[agent] = !!owned;
+          });
+          saveAgentsState();
+          // Re-render checkboxes to reflect imported state
+          Object.entries(data.agents).forEach(([agent, owned]) => {
+            const row = document.getElementById(`row-${agent}`);
+            if (row) {
+              row.classList.toggle('checked', !!owned);
+              const cb = row.querySelector('input[type="checkbox"]');
+              if (cb) cb.checked = !!owned;
+            }
+          });
+        }
+
+        // Restaurer les correspondances
+        if (Array.isArray(data.matches)) {
+          matches.length = 0;
+          data.matches.forEach(m => matches.push(m));
+          matchIdCounter = matches.reduce((max, m) => Math.max(max, m.id || 0), 0);
+          saveMatches();
+        }
+
+        // Restaurer les objectifs
+        if (Array.isArray(data.objectives)) {
+          objectives.length = 0;
+          data.objectives.forEach(o => objectives.push(o));
+          saveObjectives();
+        }
+
+        for (const role in ROLE_COLORS) updateRoleCount(role);
+        updateGlobalCount();
+        renderMatches();
+        renderObjectives();
+        renderBadges();
+
+        importStatus.style.display = 'block';
+        importStatus.textContent = `Import réussi — ${data.matches ? data.matches.length : 0} parties restaurées.`;
+        importStatus.style.color = 'var(--neon)';
+      } catch (err) {
+        importStatus.style.display = 'block';
+        importStatus.textContent = 'Erreur : ce fichier n\'est pas une sauvegarde valide.';
+        importStatus.style.color = 'var(--red)';
+      }
+    };
+    reader.readAsText(file);
+    importInput.value = '';
+  });
+}
+
+/* ================================================================
+   OBJECTIFS PERSONNELS (K/D cible avec barre de progression)
+   ================================================================ */
+
+const STORAGE_KEY_OBJECTIVES = 'valorant_objectives';
+const objectives = JSON.parse(localStorage.getItem(STORAGE_KEY_OBJECTIVES) || '[]');
+let objectiveIdCounter = objectives.reduce((max, o) => Math.max(max, o.id || 0), 0);
+
+const addObjectiveBtn = document.getElementById('add-objective-btn');
+const objectivesFormWrap = document.getElementById('objectives-form-wrap');
+const objectiveForm = document.getElementById('objective-form');
+const cancelObjectiveBtn = document.getElementById('cancel-objective-btn');
+const objectivesListEl = document.getElementById('objectives-list');
+const objectivesEmptyEl = document.getElementById('objectives-empty');
+
+if (addObjectiveBtn) {
+  addObjectiveBtn.addEventListener('click', () => {
+    objectivesFormWrap.style.display = objectivesFormWrap.style.display === 'none' ? 'block' : 'none';
+  });
+}
+
+if (cancelObjectiveBtn) {
+  cancelObjectiveBtn.addEventListener('click', () => {
+    objectivesFormWrap.style.display = 'none';
+    objectiveForm.reset();
+  });
+}
+
+if (objectiveForm) {
+  objectiveForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const label = document.getElementById('obj-label').value.trim();
+    const target = parseFloat(document.getElementById('obj-target').value) || 1;
+
+    if (!label) return;
+
+    objectiveIdCounter += 1;
+    objectives.push({ id: objectiveIdCounter, label, target, createdAt: Date.now() });
+    saveObjectives();
+    renderObjectives();
+
+    objectiveForm.reset();
+    document.getElementById('obj-target').value = 1.0;
+    objectivesFormWrap.style.display = 'none';
+  });
+}
+
+function currentOverallKd() {
+  if (matches.length === 0) return 0;
+  const totalKills = matches.reduce((sum, m) => sum + m.kills, 0);
+  const totalDeaths = matches.reduce((sum, m) => sum + m.deaths, 0);
+  return totalDeaths === 0 ? totalKills : totalKills / totalDeaths;
+}
+
+function renderObjectives() {
+  objectivesListEl.innerHTML = '';
+
+  if (objectives.length === 0) {
+    objectivesEmptyEl.style.display = 'block';
+    return;
+  }
+  objectivesEmptyEl.style.display = 'none';
+
+  const currentKd = currentOverallKd();
+
+  objectives.forEach(obj => {
+    const card = document.createElement('div');
+    card.className = 'objective-card';
+
+    const top = document.createElement('div');
+    top.className = 'objective-top';
+
+    const label = document.createElement('span');
+    label.className = 'objective-label';
+    label.textContent = obj.label;
+
+    const delBtn = document.createElement('button');
+    delBtn.type = 'button';
+    delBtn.className = 'delete-btn';
+    delBtn.textContent = 'Supprimer';
+    delBtn.onclick = () => deleteObjective(obj.id);
+
+    top.appendChild(label);
+    top.appendChild(delBtn);
+
+    const target = document.createElement('div');
+    target.className = 'objective-target';
+    target.textContent = `Cible : K/D ${obj.target.toFixed(2)} — actuel : ${currentKd.toFixed(2)}`;
+
+    const barBg = document.createElement('div');
+    barBg.className = 'objective-bar-bg';
+    const barFill = document.createElement('div');
+    const pct = Math.min(100, (currentKd / obj.target) * 100);
+    const reached = currentKd >= obj.target;
+    barFill.className = `objective-bar-fill ${reached ? 'ok' : 'pending'}`;
+    barFill.style.width = `${pct}%`;
+    barBg.appendChild(barFill);
+
+    const footer = document.createElement('div');
+    footer.className = 'objective-footer';
+
+    const pctLabel = document.createElement('span');
+    pctLabel.textContent = `${pct.toFixed(0)}% de la cible`;
+
+    const status = document.createElement('span');
+    status.className = `objective-status ${reached ? 'reached' : ''}`;
+    status.textContent = reached ? 'Atteint ✓' : 'En cours';
+
+    footer.appendChild(pctLabel);
+    footer.appendChild(status);
+
+    card.appendChild(top);
+    card.appendChild(target);
+    card.appendChild(barBg);
+    card.appendChild(footer);
+
+    objectivesListEl.appendChild(card);
+  });
+}
+
+function deleteObjective(id) {
+  const index = objectives.findIndex(o => o.id === id);
+  if (index !== -1) {
+    objectives.splice(index, 1);
+    saveObjectives();
+    renderObjectives();
+  }
+}
+
+function saveObjectives() {
+  localStorage.setItem(STORAGE_KEY_OBJECTIVES, JSON.stringify(objectives));
+}
+
+renderObjectives();
+
+/* ================================================================
+   BADGES & SUCCÈS
+   ================================================================ */
+
+/* Fonctions d'assistance pour les conditions de badge */
+
+function currentWinStreak() {
+  let streak = 0;
+  for (let i = matches.length - 1; i >= 0; i--) {
+    if (matchResult(matches[i]) === 'Victoire') streak += 1;
+    else break;
+  }
+  return streak;
+}
+
+function currentLossStreak() {
+  let streak = 0;
+  for (let i = matches.length - 1; i >= 0; i--) {
+    if (matchResult(matches[i]) === 'Défaite') streak += 1;
+    else break;
+  }
+  return streak;
+}
+
+function playedAllRoles() {
+  const playedAgents = new Set(matches.map(m => m.agent));
+  return Object.keys(data).every(role => data[role].some(agent => playedAgents.has(agent)));
+}
+
+function maxAgentPlayCount() {
+  const counts = {};
+  matches.forEach(m => { counts[m.agent] = (counts[m.agent] || 0) + 1; });
+  return Math.max(0, ...Object.values(counts));
+}
+
+function maxMapPlayCount() {
+  const counts = {};
+  matches.forEach(m => { if (m.map) counts[m.map] = (counts[m.map] || 0) + 1; });
+  return Math.max(0, ...Object.values(counts));
+}
+
+function immortalStreakCount() {
+  let streak = 0;
+  for (let i = matches.length - 1; i >= 0; i--) {
+    if (matches[i].deaths === 0 && matches[i].kills > 0) streak += 1;
+    else break;
+  }
+  return streak;
+}
+
+const ALL_MAPS = ['Abyss', 'Ascent', 'Bind', 'Breeze', 'Corrode', 'Fracture', 'Haven', 'Icebox', 'Lotus', 'Pearl', 'Split', 'Summit', 'Sunset'];
+
+function allMapsPlayed() {
+  const played = new Set(matches.map(m => m.map).filter(Boolean));
+  return ALL_MAPS.every(map => played.has(map));
+}
+
+function last50MatchesConsistent() {
+  if (matches.length < 50) return false;
+  return matches.slice(-50).every(m => matchKd(m) >= 1);
+}
+
+function eliteOverallKd() {
+  return matches.length >= 30 && currentOverallKd() >= 3;
+}
+
+function fullCollectionUnlocked() {
+  return Object.values(state).every(Boolean) && new Set(matches.map(m => m.agent)).size >= 20;
+}
+
+const BADGES = [
+  /* ---- Facile ---- */
+  {
+    id: 'first-match',
+    name: 'Premier sang',
+    desc: 'Journalise ta première partie',
+    icon: 'target',
+    tier: 'facile',
+    check: () => matches.length >= 1
+  },
+  {
+    id: 'all-duelists',
+    name: 'Porte-drapeau',
+    desc: 'Tous les Duellistes débloqués',
+    icon: 'shield',
+    tier: 'facile',
+    check: () => data['Duelliste'].every(a => state[a])
+  },
+  {
+    id: 'all-initiators',
+    name: 'Éclaireur',
+    desc: 'Tous les Initiateurs débloqués',
+    icon: 'shield',
+    tier: 'facile',
+    check: () => data['Initiateur'].every(a => state[a])
+  },
+  {
+    id: 'all-controllers',
+    name: 'Architecte',
+    desc: 'Tous les Contrôleurs débloqués',
+    icon: 'shield',
+    tier: 'facile',
+    check: () => data['Contrôleur'].every(a => state[a])
+  },
+  {
+    id: 'all-sentinels',
+    name: 'Rempart',
+    desc: 'Toutes les Sentinelles débloquées',
+    icon: 'shield',
+    tier: 'facile',
+    check: () => data['Sentinelle'].every(a => state[a])
+  },
+  {
+    id: 'full-roster',
+    name: 'Roster complet',
+    desc: 'Tous les agents débloqués',
+    icon: 'star',
+    tier: 'facile',
+    check: () => Object.values(state).every(v => v)
+  },
+  {
+    id: 'ten-matches',
+    name: 'Vétéran',
+    desc: 'Journalise 10 parties',
+    icon: 'layers',
+    tier: 'facile',
+    check: () => matches.length >= 10
+  },
+  {
+    id: 'ranked-10',
+    name: 'Compétiteur',
+    desc: '10 parties en mode Compétitif',
+    icon: 'medal',
+    tier: 'facile',
+    check: () => matches.filter(m => m.mode === 'Compétitif').length >= 10
+  },
+  {
+    id: 'multi-map',
+    name: 'Globe-trotter',
+    desc: 'Parties jouées sur 5 cartes différentes',
+    icon: 'map',
+    tier: 'facile',
+    check: () => new Set(matches.map(m => m.map).filter(Boolean)).size >= 5
+  },
+  {
+    id: 'all-roles-played',
+    name: 'Quatre coins',
+    desc: 'Au moins un agent joué de chaque rôle',
+    icon: 'compass',
+    tier: 'facile',
+    check: () => playedAllRoles()
+  },
+
+  /* ---- Moyen ---- */
+  {
+    id: 'five-wins',
+    name: 'Série victorieuse',
+    desc: '5 victoires enregistrées',
+    icon: 'trophy',
+    tier: 'moyen',
+    check: () => matches.filter(m => matchResult(m) === 'Victoire').length >= 5
+  },
+  {
+    id: 'objective-reached',
+    name: 'Objectif atteint',
+    desc: 'Atteins un objectif K/D personnel',
+    icon: 'check',
+    tier: 'moyen',
+    check: () => objectives.some(o => currentOverallKd() >= o.target)
+  },
+  {
+    id: 'immortal-match',
+    name: 'Intouchable',
+    desc: 'Une partie terminée à 0 mort',
+    icon: 'shield',
+    tier: 'moyen',
+    check: () => matches.some(m => m.deaths === 0 && m.kills > 0)
+  },
+  {
+    id: 'playmaker-match',
+    name: 'Playmaker',
+    desc: '10 assistances ou plus dans une partie',
+    icon: 'users',
+    tier: 'moyen',
+    check: () => matches.some(m => m.assists >= 10)
+  },
+  {
+    id: 'ten-agents',
+    name: 'Polyvalent',
+    desc: '10 agents différents joués en partie',
+    icon: 'grid',
+    tier: 'moyen',
+    check: () => new Set(matches.map(m => m.agent)).size >= 10
+  },
+  {
+    id: 'home-map-10',
+    name: 'Terrain connu',
+    desc: '10 parties sur la même carte',
+    icon: 'pin',
+    tier: 'moyen',
+    check: () => maxMapPlayCount() >= 10
+  },
+  {
+    id: 'high-kd',
+    name: 'Fragger',
+    desc: '10 parties avec un K/D > 2',
+    icon: 'crosshair',
+    tier: 'moyen',
+    check: () => matches.filter(m => matchKd(m) > 2).length >= 10
+  },
+  {
+    id: 'multi-objectives',
+    name: 'Stratège',
+    desc: 'Deux objectifs personnels atteints en même temps',
+    icon: 'checklist',
+    tier: 'moyen',
+    check: () => objectives.length >= 2 && objectives.filter(o => currentOverallKd() >= o.target).length >= 2
+  },
+  {
+    id: 'ace-match',
+    name: 'Ace',
+    desc: '20 éliminations ou plus dans une partie',
+    icon: 'crosshair',
+    tier: 'moyen',
+    check: () => matches.some(m => m.kills >= 20)
+  },
+  {
+    id: 'explorer-8-maps',
+    name: 'Cartographe',
+    desc: '8 cartes différentes jouées',
+    icon: 'map',
+    tier: 'moyen',
+    check: () => new Set(matches.map(m => m.map).filter(Boolean)).size >= 8
+  },
+
+  /* ---- Difficile ---- */
+  {
+    id: 'fifty-matches',
+    name: 'Grinder',
+    desc: 'Journalise 50 parties',
+    icon: 'flame',
+    tier: 'difficile',
+    check: () => matches.length >= 50
+  },
+  {
+    id: 'specialist-20',
+    name: 'Spécialiste',
+    desc: '20 parties avec le même agent',
+    icon: 'award',
+    tier: 'difficile',
+    check: () => maxAgentPlayCount() >= 20
+  },
+  {
+    id: 'win-streak-5',
+    name: 'Série en cours',
+    desc: '5 victoires d\'affilée',
+    icon: 'bolt',
+    tier: 'difficile',
+    check: () => currentWinStreak() >= 5
+  },
+  {
+    id: 'loss-streak-5',
+    name: 'Increvable',
+    desc: 'Tenir bon après 5 défaites d\'affilée',
+    icon: 'shield',
+    tier: 'difficile',
+    check: () => currentLossStreak() >= 5
+  },
+  {
+    id: 'centurion',
+    name: 'Centurion',
+    desc: 'Journalise 100 parties',
+    icon: 'infinity',
+    tier: 'difficile',
+    check: () => matches.length >= 100
+  },
+
+  /* ---- Extrême ---- */
+  {
+    id: 'immortal-streak-3',
+    name: 'Trilogie parfaite',
+    desc: '3 parties consécutives terminées à 0 mort',
+    icon: 'shield',
+    tier: 'extreme',
+    check: () => immortalStreakCount() >= 3
+  },
+  {
+    id: 'ace-x5',
+    name: 'Machine à Ace',
+    desc: '5 parties avec 20 éliminations ou plus',
+    icon: 'crosshair',
+    tier: 'extreme',
+    check: () => matches.filter(m => m.kills >= 20).length >= 5
+  },
+  {
+    id: 'all-maps',
+    name: 'Toutes les cartes',
+    desc: 'Une partie jouée sur chacune des 13 cartes',
+    icon: 'map',
+    tier: 'extreme',
+    check: () => allMapsPlayed()
+  },
+  {
+    id: 'win-streak-10',
+    name: 'Invincible',
+    desc: '10 victoires d\'affilée',
+    icon: 'bolt',
+    tier: 'extreme',
+    check: () => currentWinStreak() >= 10
+  },
+  {
+    id: 'loss-streak-15',
+    name: 'Jamais abandonner',
+    desc: '15 défaites d\'affilée sans lâcher',
+    icon: 'shield',
+    tier: 'extreme',
+    check: () => currentLossStreak() >= 15
+  },
+  {
+    id: 'full-collection',
+    name: 'Collection ultime',
+    desc: 'Tous les agents débloqués et 20 joués en partie',
+    icon: 'star',
+    tier: 'extreme',
+    check: () => fullCollectionUnlocked()
+  },
+  {
+    id: 'five-objectives',
+    name: 'Grand stratège',
+    desc: '5 objectifs créés et tous atteints en même temps',
+    icon: 'checklist',
+    tier: 'extreme',
+    check: () => objectives.length >= 5 && objectives.filter(o => currentOverallKd() >= o.target).length >= 5
+  },
+  {
+    id: 'consistency-50',
+    name: 'Sans faille',
+    desc: 'Les 50 dernières parties avec un K/D ≥ 1',
+    icon: 'infinity',
+    tier: 'extreme',
+    check: () => last50MatchesConsistent()
+  },
+  {
+    id: 'elite-kd',
+    name: 'Élite',
+    desc: 'K/D global ≥ 3 sur au moins 30 parties',
+    icon: 'diamond',
+    tier: 'extreme',
+    check: () => eliteOverallKd()
+  },
+  {
+    id: 'legend-500',
+    name: 'Légende',
+    desc: 'Journalise 500 parties',
+    icon: 'crown',
+    tier: 'extreme',
+    check: () => matches.length >= 500
+  }
+];
+
+const BADGE_ICONS = {
+  target: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="0.5" fill="currentColor"/></svg>',
+  layers: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>',
+  flame: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2c1 4-3 5-3 9a3 3 0 0 0 6 0c0-1-1-2-1-3 2 1 3 3 3 6a5 5 0 0 1-10 0c0-5 3-7 5-12z"/></svg>',
+  crosshair: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/></svg>',
+  shield: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 20 6 20 12 C20 17 16.5 20.5 12 22 C7.5 20.5 4 17 4 12 L4 6 Z"/></svg>',
+  star: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3 7h7l-5.5 4.5L18.5 21 12 16.5 5.5 21 7.5 13.5 2 9h7z"/></svg>',
+  trophy: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4z"/><path d="M7 5H4a2 2 0 0 0 2 4M17 5h3a2 2 0 0 1-2 4"/></svg>',
+  map: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3 3 5v16l6-2 6 2 6-2V3l-6 2-6-2z"/><line x1="9" y1="3" x2="9" y2="19"/><line x1="15" y1="5" x2="15" y2="21"/></svg>',
+  check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/></svg>',
+  users: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+  infinity: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7" cy="12" r="4"/><circle cx="17" cy="12" r="4"/></svg>',
+  bolt: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>',
+  grid: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>',
+  compass: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><polygon points="16 8 14 14 8 16 10 10 16 8"/></svg>',
+  award: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="5"/><path d="M8.5 12.5 7 21l5-3 5 3-1.5-8.5"/></svg>',
+  pin: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s7-6.5 7-11a7 7 0 0 0-14 0c0 4.5 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>',
+  medal: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="15" r="5"/><path d="M9 11 6 3h3l3 6 3-6h3l-3 8"/></svg>',
+  checklist: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6h11M9 12h11M9 18h11"/><path d="M3 6l1 1 2-2M3 12l1 1 2-2M3 18l1 1 2-2"/></svg>',
+  crown: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 18h16M4 18 2 8l5 4 5-7 5 7 5-4-2 10"/></svg>',
+  diamond: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3h12l4 6-10 12L2 9z"/><path d="M2 9h20M9 3l3 6-3 12M15 3l-3 6 3 12"/></svg>'
+};
+
+const badgesGrid = document.getElementById('badges-grid');
+const badgesCountEl = document.getElementById('badges-count');
+
+const TIER_LABELS = {
+  facile: 'Facile',
+  moyen: 'Moyen',
+  difficile: 'Difficile',
+  extreme: 'Extrême'
+};
+
+function renderBadges() {
+  if (!badgesGrid) return;
+  badgesGrid.innerHTML = '';
+
+  let unlockedCount = 0;
+
+  BADGES.forEach(badge => {
+    const unlocked = badge.check();
+    if (unlocked) unlockedCount += 1;
+
+    const card = document.createElement('div');
+    card.className = `badge-card ${unlocked ? 'unlocked' : ''}`;
+
+    const tier = document.createElement('div');
+    tier.className = `badge-tier tier-${badge.tier || 'facile'}`;
+    tier.textContent = TIER_LABELS[badge.tier] || '';
+
+    const iconWrap = document.createElement('div');
+    iconWrap.className = 'badge-icon';
+    iconWrap.innerHTML = BADGE_ICONS[badge.icon] || '';
+
+    const name = document.createElement('div');
+    name.className = 'badge-name';
+    name.textContent = badge.name;
+
+    const desc = document.createElement('div');
+    desc.className = 'badge-desc';
+    desc.textContent = badge.desc;
+
+    card.appendChild(tier);
+    card.appendChild(iconWrap);
+    card.appendChild(name);
+    card.appendChild(desc);
+    badgesGrid.appendChild(card);
+  });
+
+  if (badgesCountEl) {
+    badgesCountEl.textContent = `${unlockedCount} / ${BADGES.length}`;
+  }
+}
+
+renderBadges();
+
+/* Rendu initial (doit s'exécuter après la déclaration de tous les éléments précédents) */
+
+renderMatches();
 
 </script>
 </body>
