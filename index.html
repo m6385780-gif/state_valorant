@@ -1467,6 +1467,85 @@ p.subtitle {
   letter-spacing: 0.3px;
 }
 
+/* Sous-texte "Record : N" sous une valeur de statut (séries) */
+.status-sub {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--muted);
+  letter-spacing: 0.3px;
+  margin-top: 2px;
+}
+
+/* Victoires d'affilée : reste en néon (comme les autres stats) */
+.streaks-bar .status-chip:nth-child(1)::before {
+  background: var(--neon);
+  box-shadow: 0 0 10px var(--neon-glow);
+}
+
+/* Défaites d'affilée : accent rouge pour distinguer d'un coup d'œil */
+.streaks-bar .status-chip:nth-child(2)::before {
+  background: var(--red);
+  box-shadow: 0 0 10px var(--red-glow);
+}
+
+.streaks-bar {
+  margin-top: -14px;
+  margin-bottom: 24px;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+#stat-lossstreak {
+  color: var(--red);
+  text-shadow: 0 0 8px var(--red-glow);
+}
+
+/* ---------- Cases "séries" (victoires/défaites d'affilée) ---------- */
+
+.status-value-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.streak-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  color: var(--neon);
+  filter: drop-shadow(0 0 4px var(--neon-glow));
+}
+
+#chip-lossstreak .streak-icon {
+  color: var(--red);
+  filter: drop-shadow(0 0 4px var(--red-glow));
+}
+
+/* Série "chaude" (3+) : légère pulsation pour signaler que ça chauffe */
+.status-chip-streak.is-hot .streak-icon {
+  animation: streak-hot-pulse 1.4s ease-in-out infinite;
+}
+
+.status-chip-streak.is-hot .status-value {
+  animation: streak-hot-text 1.4s ease-in-out infinite;
+}
+
+@keyframes streak-hot-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.18); }
+}
+
+@keyframes streak-hot-text {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.35); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .status-chip-streak.is-hot .streak-icon,
+  .status-chip-streak.is-hot .status-value {
+    animation: none;
+  }
+}
+
 .progress-wrap {
   padding: 22px 24px;
   margin-bottom: 28px;
@@ -1824,13 +1903,18 @@ input[type="checkbox"]:hover {
 }
 
 .badge-card:not(.unlocked)::before {
-  content: '🔒';
+  content: '';
   position: absolute;
   top: 10px;
   right: 10px;
-  font-size: 0.7rem;
-  opacity: .6;
-  filter: grayscale(1);
+  width: 13px;
+  height: 13px;
+  opacity: .55;
+  background-color: var(--muted);
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4'%3E%3Crect x='5' y='11' width='14' height='9' rx='1.5'/%3E%3Cpath d='M8 11V8a4 4 0 0 1 8 0v3'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4'%3E%3Crect x='5' y='11' width='14' height='9' rx='1.5'/%3E%3Cpath d='M8 11V8a4 4 0 0 1 8 0v3'/%3E%3C/svg%3E");
+  -webkit-mask-size: contain;
+  mask-size: contain;
 }
 
 .backup-note {
@@ -2102,7 +2186,7 @@ input[type="checkbox"]:focus-visible {
 <header class="masthead">
   <div class="masthead-eyebrow">
     <span class="eyebrow-tag">// PROTOCOLE.AGENT</span>
-    <span class="eyebrow-tag">V.29.2</span>
+    <span class="eyebrow-tag">V.30</span>
   </div>
   <h1>ROSTER<span class="accent-dot">_</span>TRACKER</h1>
   <p class="subtitle">Verrouille tes agents. Journalise tes affrontements.</p>
@@ -2135,6 +2219,25 @@ input[type="checkbox"]:focus-visible {
   <div class="status-chip">
     <span class="status-label">Ratio K/D moyen</span>
     <span class="status-value" id="stat-kd">—</span>
+  </div>
+</section>
+
+<section class="status-bar streaks-bar reveal" aria-label="Séries en cours">
+  <div class="status-chip status-chip-streak" id="chip-winstreak">
+    <span class="status-label">Victoires d'affilée</span>
+    <span class="status-value-row">
+      <svg class="streak-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 2c1 4-3 5-3 9a3 3 0 0 0 6 0c0-1-1-2-1-3 2 1 3 3 3 6a5 5 0 0 1-10 0c0-5 3-7 5-12z"/></svg>
+      <span class="status-value" id="stat-winstreak">0</span>
+    </span>
+    <span class="status-sub" id="stat-winstreak-record">Record : 0</span>
+  </div>
+  <div class="status-chip status-chip-streak" id="chip-lossstreak">
+    <span class="status-label">Défaites d'affilée</span>
+    <span class="status-value-row">
+      <svg class="streak-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="11" r="7"/><path d="M9 10.5v1M15 10.5v1M8.5 17c1-1.2 2.2-1.6 3.5-1.6s2.5.4 3.5 1.6"/><path d="M8 18l-1 2M16 18l1 2M10 18v2M14 18v2"/></svg>
+      <span class="status-value" id="stat-lossstreak">0</span>
+    </span>
+    <span class="status-sub" id="stat-lossstreak-record">Record : 0</span>
   </div>
 </section>
 
@@ -2582,6 +2685,89 @@ matchForm.addEventListener('submit', (e) => {
   document.getElementById('match-assists').value = 0;
 });
 
+/* ================================================================
+   SÉRIES DE VICTOIRES / DÉFAITES (mémorisées, ne disparaissent plus)
+   ================================================================
+
+   Problème corrigé : les badges de série (5 victoires d'affilée, etc.)
+   se basaient sur la série EN COURS. Dès que la série se terminait
+   (une victoire après une défaite, ou l'inverse), le badge déjà
+   débloqué redevenait verrouillé — il "s'enlevait".
+
+   Solution : on mémorise en plus le MEILLEUR score jamais atteint
+   (record), dans le stockage local, séparément de l'historique des
+   parties. Les badges se basent désormais sur ce record, qui ne
+   peut que grandir — jamais diminuer, même si les parties les plus
+   anciennes sont supprimées.
+   ================================================================ */
+
+const STORAGE_KEY_STREAK_RECORDS = 'valorant_streak_records';
+
+const streakRecords = Object.assign(
+  { bestWinStreak: 0, bestLossStreak: 0, bestImmortalStreak: 0 },
+  JSON.parse(localStorage.getItem(STORAGE_KEY_STREAK_RECORDS) || '{}')
+);
+
+function saveStreakRecords() {
+  localStorage.setItem(STORAGE_KEY_STREAK_RECORDS, JSON.stringify(streakRecords));
+}
+
+// Longueur de la plus longue série consécutive respectant une condition,
+// sur l'ensemble de l'historique (pas seulement la fin de la liste).
+function longestStreak(list, predicate) {
+  let max = 0;
+  let current = 0;
+  list.forEach(item => {
+    if (predicate(item)) {
+      current += 1;
+      if (current > max) max = current;
+    } else {
+      current = 0;
+    }
+  });
+  return max;
+}
+
+// Recalcule les records à partir de l'historique actuel et ne les
+// met à jour QUE s'ils progressent (jamais de retour en arrière).
+function updateStreakRecords() {
+  const winMax = longestStreak(matches, m => matchResult(m) === 'Victoire');
+  const lossMax = longestStreak(matches, m => matchResult(m) === 'Défaite');
+  const immortalMax = longestStreak(matches, m => m.deaths === 0 && m.kills > 0);
+
+  let changed = false;
+  if (winMax > streakRecords.bestWinStreak) { streakRecords.bestWinStreak = winMax; changed = true; }
+  if (lossMax > streakRecords.bestLossStreak) { streakRecords.bestLossStreak = lossMax; changed = true; }
+  if (immortalMax > streakRecords.bestImmortalStreak) { streakRecords.bestImmortalStreak = immortalMax; changed = true; }
+
+  if (changed) saveStreakRecords();
+}
+
+// Met à jour l'affichage "Victoires d'affilée" / "Défaites d'affilée"
+// dans la barre de statut : série en cours + record mémorisé.
+function updateStreakDisplay() {
+  const winStreakEl = document.getElementById('stat-winstreak');
+  const lossStreakEl = document.getElementById('stat-lossstreak');
+  const winRecordEl = document.getElementById('stat-winstreak-record');
+  const lossRecordEl = document.getElementById('stat-lossstreak-record');
+  const winChipEl = document.getElementById('chip-winstreak');
+  const lossChipEl = document.getElementById('chip-lossstreak');
+
+  if (!winStreakEl || !lossStreakEl) return;
+
+  const winStreak = currentWinStreak();
+  const lossStreak = currentLossStreak();
+
+  winStreakEl.textContent = winStreak;
+  lossStreakEl.textContent = lossStreak;
+  if (winRecordEl) winRecordEl.textContent = `Record : ${streakRecords.bestWinStreak}`;
+  if (lossRecordEl) lossRecordEl.textContent = `Record : ${streakRecords.bestLossStreak}`;
+
+  const HOT_STREAK_THRESHOLD = 3;
+  if (winChipEl) winChipEl.classList.toggle('is-hot', winStreak >= HOT_STREAK_THRESHOLD);
+  if (lossChipEl) lossChipEl.classList.toggle('is-hot', lossStreak >= HOT_STREAK_THRESHOLD);
+}
+
 function matchResult(match) {
   if (match.scoreTeam === undefined || match.scoreEnemy === undefined) return null;
   if (match.scoreTeam > match.scoreEnemy) return 'Victoire';
@@ -2686,6 +2872,8 @@ function renderMatches() {
   }
 
   updateStatusBar();
+  updateStreakRecords();
+  updateStreakDisplay();
   refreshPerfAgentFilter();
   renderPerformance();
   renderMapStats();
@@ -3665,18 +3853,18 @@ const BADGES = [
   {
     id: 'win-streak-5',
     name: 'Série en cours',
-    desc: '5 victoires d\'affilée',
+    desc: '5 victoires d\'affilée (une fois atteint, reste débloqué)',
     icon: 'bolt',
     tier: 'difficile',
-    check: () => currentWinStreak() >= 5
+    check: () => streakRecords.bestWinStreak >= 5
   },
   {
     id: 'loss-streak-5',
     name: 'Increvable',
-    desc: 'Tenir bon après 5 défaites d\'affilée',
+    desc: 'Tenir bon après 5 défaites d\'affilée (une fois atteint, reste débloqué)',
     icon: 'shield',
     tier: 'difficile',
-    check: () => currentLossStreak() >= 5
+    check: () => streakRecords.bestLossStreak >= 5
   },
   {
     id: 'centurion',
@@ -3691,10 +3879,10 @@ const BADGES = [
   {
     id: 'immortal-streak-3',
     name: 'Trilogie parfaite',
-    desc: '3 parties consécutives terminées à 0 mort',
+    desc: '3 parties consécutives terminées à 0 mort (une fois atteint, reste débloqué)',
     icon: 'shield',
     tier: 'extreme',
-    check: () => immortalStreakCount() >= 3
+    check: () => streakRecords.bestImmortalStreak >= 3
   },
   {
     id: 'ace-x5',
@@ -3715,18 +3903,18 @@ const BADGES = [
   {
     id: 'win-streak-10',
     name: 'Invincible',
-    desc: '10 victoires d\'affilée',
+    desc: '10 victoires d\'affilée (une fois atteint, reste débloqué)',
     icon: 'bolt',
     tier: 'extreme',
-    check: () => currentWinStreak() >= 10
+    check: () => streakRecords.bestWinStreak >= 10
   },
   {
     id: 'loss-streak-15',
     name: 'Jamais abandonner',
-    desc: '15 défaites d\'affilée sans lâcher',
+    desc: '15 défaites d\'affilée sans lâcher (une fois atteint, reste débloqué)',
     icon: 'shield',
     tier: 'extreme',
-    check: () => currentLossStreak() >= 15
+    check: () => streakRecords.bestLossStreak >= 15
   },
   {
     id: 'full-collection',
