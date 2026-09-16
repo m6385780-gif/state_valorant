@@ -377,6 +377,27 @@ button:hover {
   box-shadow: 0 0 18px var(--red-glow), 0 0 40px rgba(255, 70, 85, 0.3) !important;
 }
 
+/* ---------- État désactivé (ex : "Rejouer" tant qu'aucune partie n'existe) ---------- */
+
+button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  filter: grayscale(0.4);
+}
+
+.perf-btn:disabled {
+  opacity: 0.4 !important;
+  cursor: not-allowed !important;
+  filter: grayscale(0.5);
+}
+
+.perf-btn:disabled:hover {
+  background: transparent !important;
+  color: var(--red) !important;
+  text-shadow: 0 0 6px var(--red-glow) !important;
+  box-shadow: 0 0 10px rgba(255, 70, 85, 0.2) !important;
+}
+
 /* ---------- Agent grid ---------- */
 
 .role-block {
@@ -618,7 +639,7 @@ input[type="checkbox"] {
 
 .match-table {
   width: 100%;
-  min-width: 640px;
+  min-width: 720px;
   border-collapse: collapse;
 }
 
@@ -716,6 +737,70 @@ input[type="checkbox"] {
   color: #000000;
   text-shadow: none;
   box-shadow: 0 0 14px var(--red-glow);
+}
+
+/* ---------- Modifier une partie ---------- */
+
+.edit-btn {
+  font-family: var(--font-mono);
+  background: transparent;
+  border: 1px solid var(--neon);
+  color: var(--neon);
+  padding: 5px 10px;
+  cursor: pointer;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-shadow: 0 0 4px var(--neon-glow);
+  transition: box-shadow 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+
+.edit-btn:hover {
+  background: var(--neon);
+  color: #000000;
+  text-shadow: none;
+  box-shadow: 0 0 14px var(--neon-glow);
+}
+
+/* Bouton neutre pour annuler une action (modification en cours, filtre) */
+.cancel-btn {
+  font-family: var(--font-mono);
+  background: transparent;
+  border: 1px solid var(--muted);
+  color: var(--muted);
+  padding: 9px 18px;
+  cursor: pointer;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: box-shadow 0.2s ease, background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.cancel-btn:hover {
+  background: var(--muted);
+  border-color: var(--muted);
+  color: #000000;
+  box-shadow: 0 0 12px rgba(139, 135, 160, 0.35);
+}
+
+/* ---------- Filtres de l'historique ---------- */
+
+.history-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: end;
+  margin-bottom: 18px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.history-filters .field select {
+  min-width: 150px;
 }
 
 .empty-state {
@@ -1301,6 +1386,155 @@ input[type="checkbox"] {
   .badge-card.unlocked .badge-tier.tier-extreme { animation: none; }
 }
 
+/* ---------- Impossible : palier ultime, au-dessus d'Extrême ---------- */
+
+.tier-impossible {
+  color: #ffffff;
+  text-shadow: 0 0 6px rgba(255, 255, 255, 0.6);
+  font-weight: 900;
+}
+
+.badge-card.unlocked .badge-tier.tier-impossible {
+  animation: impossible-label-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes impossible-label-pulse {
+  0%   { color: var(--red);    text-shadow: 0 0 8px var(--red-glow); }
+  25%  { color: var(--purple); text-shadow: 0 0 8px var(--purple-glow); }
+  50%  { color: var(--neon);   text-shadow: 0 0 8px var(--neon-glow); }
+  75%  { color: #ffb800;       text-shadow: 0 0 10px rgba(255, 184, 0, 0.75); }
+  100% { color: var(--red);    text-shadow: 0 0 8px var(--red-glow); }
+}
+
+/* Carte débloquée : bordure holographique qui défile, au lieu du simple liseré néon */
+.badge-card.unlocked:has(.tier-impossible) {
+  border: 2px solid transparent;
+  background:
+    linear-gradient(var(--panel), var(--panel)) padding-box,
+    linear-gradient(120deg, var(--red), var(--purple), var(--neon), #ffb800, var(--red)) border-box;
+  background-size: 100% 100%, 300% 300%;
+  animation: impossible-border-shift 5s linear infinite;
+  box-shadow: 0 0 22px rgba(255, 255, 255, 0.18);
+}
+
+.badge-card.unlocked:has(.tier-impossible) .badge-icon {
+  color: #ffffff;
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.7));
+}
+
+@keyframes impossible-border-shift {
+  0% { background-position: 0 0, 0% 50%; }
+  100% { background-position: 0 0, 100% 50%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .badge-card.unlocked .badge-tier.tier-impossible,
+  .badge-card.unlocked:has(.tier-impossible) {
+    animation: none;
+  }
+}
+
+/* La carte Impossible s'étale sur toute la largeur de la grille de badges */
+.badges-grid .badge-card.badge-impossible {
+  grid-column: 1 / -1;
+  min-height: auto;
+}
+
+.badge-impossible-content {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+/* ---------- Barre de progression vers le badge Impossible ---------- */
+
+.badge-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: 4px;
+}
+
+.badge-progress-bar-bg {
+  background: #050508;
+  height: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 184, 0, 0.4);
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.6);
+  width: 100%;
+}
+
+.badge-progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--red), var(--purple), var(--neon), #ffb800, var(--red));
+  background-size: 300% 100%;
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.45);
+  transition: width 0.4s ease;
+  animation: badge-progress-shimmer 4s linear infinite;
+}
+
+@keyframes badge-progress-shimmer {
+  0% { background-position: 0% 0; }
+  100% { background-position: 100% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .badge-progress-bar-fill {
+    animation: none;
+  }
+}
+
+.badge-progress-label {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--muted);
+  letter-spacing: 0.3px;
+  text-align: center;
+}
+
+.badge-card.unlocked .badge-progress-label {
+  color: #ffffff;
+}
+
+@media (min-width: 481px) {
+  .badge-card.badge-impossible {
+    flex-direction: row;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+    gap: 20px;
+    padding: 22px 26px;
+  }
+
+  .badge-impossible-content {
+    flex: 1;
+    min-width: 0;
+    align-items: center;
+    text-align: center;
+  }
+
+  .badge-card.badge-impossible .badge-name {
+    font-size: 1rem;
+  }
+
+  .badge-card.badge-impossible .badge-desc {
+    max-width: 560px;
+    margin: 0 auto;
+  }
+
+  .badge-card.badge-impossible .badge-tier {
+    align-self: center;
+    flex-shrink: 0;
+  }
+
+  .badge-progress {
+    max-width: 420px;
+    margin: 4px auto 0;
+    align-items: center;
+  }
+}
+
 /* ---------- Backup ---------- */
 
 .backup-note {
@@ -1309,6 +1543,53 @@ input[type="checkbox"] {
   color: var(--muted);
   line-height: 1.5;
   margin: 0;
+}
+
+/* ---------- Zone de danger : tout réinitialiser ---------- */
+
+.reset-zone {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px dashed var(--red);
+}
+
+.reset-warning {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--red);
+  text-shadow: 0 0 4px var(--red-glow);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.danger-btn {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  background: rgba(255, 70, 85, 0.08);
+  border: 1px solid var(--red);
+  color: var(--red);
+  padding: 10px 22px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  text-shadow: 0 0 6px var(--red-glow);
+  box-shadow: 0 0 10px rgba(255, 70, 85, 0.25);
+  transition: box-shadow 0.2s ease, background 0.2s ease, color 0.2s ease;
+  clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+}
+
+.danger-btn:hover {
+  background: var(--red);
+  color: #000000;
+  text-shadow: none;
+  box-shadow: 0 0 20px var(--red-glow), 0 0 44px rgba(255, 70, 85, 0.35);
+}
+
+.danger-btn:focus-visible {
+  outline: 2px solid var(--red);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(255, 70, 85, 0.18);
 }
 
 @media (max-width: 400px) {
@@ -1474,6 +1755,153 @@ p.subtitle {
   color: var(--muted);
   letter-spacing: 0.3px;
   margin-top: 2px;
+}
+
+/* ============================================================
+   V32 — Agent du moment / Stats par rôle / Aperçu hebdomadaire
+   ============================================================ */
+
+/* ---------- Agent du moment (cases "spotlight") ---------- */
+
+.spotlight-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  margin-bottom: 22px;
+}
+
+.spotlight-card {
+  position: relative;
+  background: var(--panel);
+  padding: 14px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow: hidden;
+  transition: background 0.2s ease;
+}
+
+.spotlight-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 34px;
+  height: 2px;
+  background: var(--purple);
+  box-shadow: 0 0 10px var(--purple-glow);
+  opacity: 0.75;
+}
+
+.spotlight-card:hover {
+  background: var(--panel-alt);
+}
+
+.spotlight-value {
+  font-family: var(--font-mono);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--neon);
+  text-shadow: 0 0 8px var(--neon-glow);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Aperçu hebdomadaire (mini bar chart, 7 jours) ---------- */
+
+.week-days {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 8px;
+  padding: 16px 8px 4px;
+}
+
+.week-day {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.week-day-count {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.week-day-bar {
+  width: 60%;
+  min-height: 4px;
+  border-radius: 2px 2px 0 0;
+  background: linear-gradient(180deg, var(--neon), var(--purple));
+  box-shadow: 0 0 8px var(--neon-glow);
+  transition: height 0.3s ease;
+}
+
+.week-day-bar.no-match {
+  background: var(--border-bright);
+  box-shadow: none;
+}
+
+.week-day-kd {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.week-day-kd.kd-good {
+  color: var(--neon);
+  text-shadow: 0 0 4px var(--neon-glow);
+}
+
+.week-day-kd.kd-bad {
+  color: var(--red);
+  text-shadow: 0 0 4px var(--red-glow);
+}
+
+.week-day-label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+@media (max-width: 900px) {
+  .spotlight-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .spotlight-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .week-days {
+    gap: 3px;
+    padding: 12px 2px 4px;
+  }
+
+  .week-day-bar {
+    width: 70%;
+  }
+
+  .week-day-label,
+  .week-day-kd {
+    font-size: 0.56rem;
+  }
+
+  .week-day-count {
+    font-size: 0.65rem;
+  }
 }
 
 /* Victoires d'affilée : reste en néon (comme les autres stats) */
@@ -2163,6 +2591,160 @@ input[type="checkbox"]:focus-visible {
   }
 }
 
+/* ============================================================
+   V31 — Modifier / Annuler la suppression / Filtres / Rejouer
+   ============================================================ */
+
+/* Toast d'annulation de suppression */
+
+.undo-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%) translateY(20px);
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--panel);
+  border: 1px solid var(--border-bright);
+  border-left: 3px solid var(--red);
+  padding: 12px 16px;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--text);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), 0 0 16px var(--red-glow);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  max-width: calc(100vw - 32px);
+  overflow: hidden;
+}
+
+.undo-toast.visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
+}
+
+.undo-toast-text {
+  white-space: nowrap;
+}
+
+.undo-toast-btn {
+  font-family: var(--font-mono);
+  background: transparent;
+  border: 1px solid var(--neon);
+  color: var(--neon);
+  padding: 6px 14px;
+  cursor: pointer;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-shadow: 0 0 4px var(--neon-glow);
+  white-space: nowrap;
+  transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.undo-toast-btn:hover {
+  background: var(--neon);
+  color: #000000;
+  text-shadow: none;
+  box-shadow: 0 0 14px var(--neon-glow);
+}
+
+.undo-toast-bar {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  width: 100%;
+  background: var(--red);
+  box-shadow: 0 0 8px var(--red-glow);
+}
+
+.undo-toast.visible .undo-toast-bar {
+  animation: undo-toast-countdown 5s linear forwards;
+}
+
+@keyframes undo-toast-countdown {
+  from { width: 100%; }
+  to { width: 0%; }
+}
+
+/* Focus clavier pour les nouveaux contrôles, même langage que le reste */
+
+.edit-btn:focus-visible,
+.undo-toast-btn:focus-visible {
+  outline: 2px solid var(--neon);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(57, 255, 20, 0.18);
+}
+
+.cancel-btn:focus-visible {
+  outline: 2px solid var(--muted);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(139, 135, 160, 0.18);
+}
+
+@media (max-width: 640px) {
+  .undo-toast {
+    left: 12px;
+    right: 12px;
+    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    transform: translateY(20px);
+    max-width: none;
+    flex-wrap: wrap;
+  }
+
+  .undo-toast.visible {
+    transform: translateY(0);
+  }
+
+  .history-filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .history-filters .field select {
+    min-width: unset;
+    width: 100%;
+  }
+
+  .history-filters .cancel-btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  button,
+  .submit-btn,
+  .delete-btn,
+  .share-btn,
+  .edit-btn,
+  .cancel-btn,
+  .undo-toast-btn,
+  .danger-btn,
+  .small-btn,
+  .quicknav a {
+    min-height: 44px;
+  }
+
+  .delete-btn,
+  .share-btn,
+  .edit-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .undo-toast.visible .undo-toast-bar {
+    animation: none;
+    width: 0%;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .progress-bar-fill::after {
     animation: none;
@@ -2176,7 +2758,6 @@ input[type="checkbox"]:focus-visible {
     transform: none;
   }
 }
-
 </style>
 </head>
 <body>
@@ -2186,7 +2767,7 @@ input[type="checkbox"]:focus-visible {
 <header class="masthead">
   <div class="masthead-eyebrow">
     <span class="eyebrow-tag">// PROTOCOLE.AGENT</span>
-    <span class="eyebrow-tag">V.30</span>
+    <span class="eyebrow-tag">V.32</span>
   </div>
   <h1>ROSTER<span class="accent-dot">_</span>TRACKER</h1>
   <p class="subtitle">Verrouille tes agents. Journalise tes affrontements.</p>
@@ -2198,9 +2779,11 @@ input[type="checkbox"]:focus-visible {
   <a href="#history-section">03 · Historique</a>
   <a href="#perf-section">04 · Performance</a>
   <a href="#map-stats-section">05 · Cartes</a>
-  <a href="#objectives-section">06 · Objectifs</a>
-  <a href="#badges-section">07 · Badges</a>
-  <a href="#backup-section">08 · Sauvegarde</a>
+  <a href="#weekly-section">06 · Semaine</a>
+  <a href="#role-stats-section">07 · Rôles</a>
+  <a href="#objectives-section">08 · Objectifs</a>
+  <a href="#badges-section">09 · Badges</a>
+  <a href="#backup-section">10 · Sauvegarde</a>
 </nav>
 
 <section class="status-bar reveal" aria-label="Statut de mission">
@@ -2263,6 +2846,7 @@ input[type="checkbox"]:focus-visible {
   <div class="section-header">
     <span class="section-index">02</span>
     <h2>Journaliser une partie</h2>
+    <button type="button" class="perf-btn small-btn" id="replay-last-btn" disabled>↺ Rejouer les réglages</button>
   </div>
   <form id="match-form" class="match-form">
     <div class="field">
@@ -2321,7 +2905,8 @@ input[type="checkbox"]:focus-visible {
       <label for="match-assists">Assist.</label>
       <input type="number" id="match-assists" min="0" value="0" inputmode="numeric" required>
     </div>
-    <button type="submit" class="submit-btn">Ajouter la partie</button>
+    <button type="submit" class="submit-btn" id="match-submit-btn">Ajouter la partie</button>
+    <button type="button" class="cancel-btn" id="cancel-edit-btn" style="display:none;">Annuler la modification</button>
   </form>
 </section>
 
@@ -2330,6 +2915,23 @@ input[type="checkbox"]:focus-visible {
     <span class="section-index">03</span>
     <h2>Historique des parties</h2>
   </div>
+
+  <div class="history-filters">
+    <div class="field">
+      <label for="history-filter-agent">Agent</label>
+      <select id="history-filter-agent"></select>
+    </div>
+    <div class="field">
+      <label for="history-filter-map">Carte</label>
+      <select id="history-filter-map"></select>
+    </div>
+    <div class="field">
+      <label for="history-filter-mode">Mode</label>
+      <select id="history-filter-mode"></select>
+    </div>
+    <button type="button" class="cancel-btn" id="history-filter-reset">Réinitialiser</button>
+  </div>
+
   <div class="table-scroll">
     <table class="match-table">
       <thead>
@@ -2343,6 +2945,7 @@ input[type="checkbox"]:focus-visible {
           <th>Morts</th>
           <th>Assist.</th>
           <th>K/D</th>
+          <th></th>
           <th></th>
           <th></th>
         </tr>
@@ -2422,9 +3025,60 @@ input[type="checkbox"]:focus-visible {
   <p id="map-stats-empty" class="empty-state">Journalise au moins une partie pour voir tes stats par carte.</p>
 </section>
 
-<section class="match-section hud-frame reveal" id="objectives-section">
+<section class="match-section hud-frame reveal" id="weekly-section">
   <div class="section-header">
     <span class="section-index">06</span>
+    <h2>Cette semaine</h2>
+  </div>
+
+  <div class="spotlight-grid">
+    <div class="spotlight-card">
+      <span class="status-label">Agent le plus joué</span>
+      <span class="spotlight-value" id="spotlight-most-played">—</span>
+      <span class="status-sub" id="spotlight-most-played-sub"></span>
+    </div>
+    <div class="spotlight-card">
+      <span class="status-label">Meilleur K/D</span>
+      <span class="spotlight-value" id="spotlight-best-kd">—</span>
+      <span class="status-sub" id="spotlight-best-kd-sub"></span>
+    </div>
+    <div class="spotlight-card">
+      <span class="status-label">Parties (7 derniers jours)</span>
+      <span class="spotlight-value" id="week-match-count">0</span>
+      <span class="status-sub">K/D de la semaine : <span id="week-kd">—</span></span>
+    </div>
+  </div>
+
+  <div class="week-days" id="week-days"></div>
+  <p id="week-empty" class="empty-state" style="display:none;"></p>
+</section>
+
+<section class="match-section hud-frame reveal" id="role-stats-section">
+  <div class="section-header">
+    <span class="section-index">07</span>
+    <h2>Statistiques par rôle</h2>
+  </div>
+  <div class="table-scroll">
+    <table class="match-table">
+      <thead>
+        <tr>
+          <th>Rôle</th>
+          <th>Parties</th>
+          <th>Victoires</th>
+          <th>Winrate</th>
+          <th>K/D moyen</th>
+          <th>Élim. moy.</th>
+        </tr>
+      </thead>
+      <tbody id="role-stats-body"></tbody>
+    </table>
+  </div>
+  <p id="role-stats-empty" class="empty-state">Journalise au moins une partie pour voir tes stats par rôle.</p>
+</section>
+
+<section class="match-section hud-frame reveal" id="objectives-section">
+  <div class="section-header">
+    <span class="section-index">08</span>
     <h2>Objectifs personnels</h2>
     <button type="button" class="perf-btn small-btn" id="add-objective-btn">+ Nouvel objectif</button>
   </div>
@@ -2450,8 +3104,8 @@ input[type="checkbox"]:focus-visible {
 
 <section class="match-section hud-frame reveal" id="badges-section">
   <div class="section-header">
-    <span class="section-index">07</span>
-    <h2>Badges & succès</h2>
+    <span class="section-index">09</span>
+    <h2>Badges &amp; succès</h2>
     <span class="status-label" id="badges-count">0 / 0</span>
   </div>
   <div class="badges-grid" id="badges-grid"></div>
@@ -2459,7 +3113,7 @@ input[type="checkbox"]:focus-visible {
 
 <section class="match-section hud-frame reveal" id="backup-section">
   <div class="section-header">
-    <span class="section-index">08</span>
+    <span class="section-index">10</span>
     <h2>Sauvegarde des données</h2>
   </div>
   <p class="backup-note">Tes données sont stockées uniquement dans ce navigateur. Exporte-les pour les garder en sécurité ou les transférer sur un autre appareil.</p>
@@ -2469,9 +3123,23 @@ input[type="checkbox"]:focus-visible {
     <input type="file" id="import-json-input" accept=".json,application/json" style="display:none;">
   </div>
   <p id="import-status" class="history-note" style="display:none;"></p>
+
+  <div class="reset-zone">
+    <p class="reset-warning">⚠ Zone de danger : supprime définitivement le roster, l'historique, les objectifs et les records de séries de ce navigateur.</p>
+    <div class="controls" style="margin: 10px 0 0;">
+      <button type="button" id="reset-all-btn" class="danger-btn">Tout réinitialiser</button>
+    </div>
+    <p id="reset-status" class="history-note" style="display:none;"></p>
+  </div>
 </section>
 
 <button id="back-to-top" class="back-to-top" aria-label="Retour en haut" title="Retour en haut">▲</button>
+
+<div id="undo-toast" class="undo-toast" role="status" aria-live="polite">
+  <span class="undo-toast-text" id="undo-toast-text">Partie supprimée.</span>
+  <button type="button" class="undo-toast-btn" id="undo-toast-btn">Annuler</button>
+  <div class="undo-toast-bar" id="undo-toast-bar"></div>
+</div>
 
 <canvas id="share-canvas" width="1000" height="562" style="display:none;"></canvas>
 
@@ -2499,6 +3167,12 @@ const ROLE_ICONS = {
 
 const STORAGE_KEY_AGENTS = 'valorant_agents_owned';
 const STORAGE_KEY_MATCHES = 'valorant_match_history';
+
+// Lien inverse agent -> rôle, utilisé pour les statistiques par rôle.
+const agentRoleMap = {};
+Object.entries(data).forEach(([role, agents]) => {
+  agents.forEach(agent => { agentRoleMap[agent] = role; });
+});
 
 const state = {};
 const total = Object.values(data).flat().length;
@@ -2659,6 +3333,68 @@ const matchForm = document.getElementById('match-form');
 const matchHistoryBody = document.getElementById('match-history');
 const noMatchesText = document.getElementById('no-matches');
 const historyNote = document.getElementById('history-note');
+const matchSubmitBtn = document.getElementById('match-submit-btn');
+const cancelEditBtn = document.getElementById('cancel-edit-btn');
+const replayLastBtn = document.getElementById('replay-last-btn');
+
+// Ajoute temporairement un agent non déverrouillé à la liste déroulante,
+// pour pouvoir modifier / rejouer une partie jouée avec un agent qu'on a
+// depuis reverrouillé. Redevient invisible au prochain refreshAgentSelect().
+function ensureAgentOption(agentName) {
+  if (!agentName) return;
+  const exists = Array.from(agentSelect.options).some(opt => opt.value === agentName);
+  if (!exists) {
+    const opt = document.createElement('option');
+    opt.value = agentName;
+    opt.textContent = `${agentName} (non déverrouillé)`;
+    agentSelect.insertBefore(opt, agentSelect.firstChild);
+  }
+  agentSelect.value = agentName;
+}
+
+function resetMatchFormFields() {
+  matchForm.reset();
+  document.getElementById('match-score-team').value = 0;
+  document.getElementById('match-score-enemy').value = 0;
+  document.getElementById('match-kills').value = 0;
+  document.getElementById('match-deaths').value = 0;
+  document.getElementById('match-assists').value = 0;
+}
+
+/* ---------- Modifier une partie existante ---------- */
+
+let editingMatchId = null;
+
+function startEditMatch(id) {
+  const match = matches.find(m => m.id === id);
+  if (!match) return;
+
+  editingMatchId = id;
+
+  ensureAgentOption(match.agent);
+  document.getElementById('match-map').value = match.map || '';
+  document.getElementById('match-mode').value = match.mode || '';
+  document.getElementById('match-score-team').value = match.scoreTeam ?? 0;
+  document.getElementById('match-score-enemy').value = match.scoreEnemy ?? 0;
+  document.getElementById('match-kills').value = match.kills ?? 0;
+  document.getElementById('match-deaths').value = match.deaths ?? 0;
+  document.getElementById('match-assists').value = match.assists ?? 0;
+
+  matchSubmitBtn.textContent = 'Enregistrer les modifications';
+  cancelEditBtn.style.display = 'inline-flex';
+
+  document.getElementById('journal-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function cancelEditMatch() {
+  editingMatchId = null;
+  resetMatchFormFields();
+  matchSubmitBtn.textContent = 'Ajouter la partie';
+  cancelEditBtn.style.display = 'none';
+  refreshAgentSelect();
+}
+
+cancelEditBtn.addEventListener('click', cancelEditMatch);
 
 matchForm.addEventListener('submit', (e) => {
   e.preventDefault();
@@ -2672,18 +3408,47 @@ matchForm.addEventListener('submit', (e) => {
   const deaths = parseInt(document.getElementById('match-deaths').value, 10) || 0;
   const assists = parseInt(document.getElementById('match-assists').value, 10) || 0;
 
-  matchIdCounter += 1;
-  matches.push({ id: matchIdCounter, agent, map, mode, scoreTeam, scoreEnemy, kills, deaths, assists });
+  if (editingMatchId !== null) {
+    const idx = matches.findIndex(m => m.id === editingMatchId);
+    if (idx !== -1) {
+      matches[idx] = { ...matches[idx], agent, map, mode, scoreTeam, scoreEnemy, kills, deaths, assists };
+    }
+    editingMatchId = null;
+    matchSubmitBtn.textContent = 'Ajouter la partie';
+    cancelEditBtn.style.display = 'none';
+  } else {
+    matchIdCounter += 1;
+    matches.push({ id: matchIdCounter, agent, map, mode, scoreTeam, scoreEnemy, kills, deaths, assists, timestamp: Date.now() });
+  }
 
   renderMatches();
   saveMatches();
-  matchForm.reset();
+  resetMatchFormFields();
+  refreshAgentSelect();
+});
+
+/* ---------- Rejouer les mêmes réglages (agent / carte / mode) ---------- */
+
+replayLastBtn.addEventListener('click', () => {
+  if (matches.length === 0) return;
+  if (editingMatchId !== null) cancelEditMatch();
+
+  const last = matches[matches.length - 1];
+  ensureAgentOption(last.agent);
+  document.getElementById('match-map').value = last.map || '';
+  document.getElementById('match-mode').value = last.mode || '';
   document.getElementById('match-score-team').value = 0;
   document.getElementById('match-score-enemy').value = 0;
   document.getElementById('match-kills').value = 0;
   document.getElementById('match-deaths').value = 0;
   document.getElementById('match-assists').value = 0;
+
+  document.getElementById('match-score-team').focus();
 });
+
+function updateReplayButtonState() {
+  replayLastBtn.disabled = matches.length === 0;
+}
 
 /* ================================================================
    SÉRIES DE VICTOIRES / DÉFAITES (mémorisées, ne disparaissent plus)
@@ -2777,17 +3542,81 @@ function matchResult(match) {
 
 const MAX_VISIBLE_MATCHES = 10;
 
-function renderMatches() {
+/* ---------- Filtres de l'historique (agent / carte / mode) ---------- */
+
+const historyFilters = { agent: 'all', map: 'all', mode: 'all' };
+
+const historyFilterAgentSelect = document.getElementById('history-filter-agent');
+const historyFilterMapSelect = document.getElementById('history-filter-map');
+const historyFilterModeSelect = document.getElementById('history-filter-mode');
+const historyFilterResetBtn = document.getElementById('history-filter-reset');
+
+function buildFilterOptions(selectEl, values, allLabel, currentValue) {
+  selectEl.innerHTML = '';
+  const allOpt = document.createElement('option');
+  allOpt.value = 'all';
+  allOpt.textContent = allLabel;
+  selectEl.appendChild(allOpt);
+
+  values.forEach(value => {
+    const opt = document.createElement('option');
+    opt.value = value;
+    opt.textContent = value;
+    selectEl.appendChild(opt);
+  });
+
+  selectEl.value = values.includes(currentValue) ? currentValue : 'all';
+  return selectEl.value;
+}
+
+function refreshHistoryFilterOptions() {
+  const agents = [...new Set(matches.map(m => m.agent))].sort();
+  const maps = [...new Set(matches.map(m => m.map).filter(Boolean))].sort();
+  const modes = [...new Set(matches.map(m => m.mode).filter(Boolean))].sort();
+
+  historyFilters.agent = buildFilterOptions(historyFilterAgentSelect, agents, 'Tous les agents', historyFilters.agent);
+  historyFilters.map = buildFilterOptions(historyFilterMapSelect, maps, 'Toutes les cartes', historyFilters.map);
+  historyFilters.mode = buildFilterOptions(historyFilterModeSelect, modes, 'Tous les modes', historyFilters.mode);
+}
+
+[historyFilterAgentSelect, historyFilterMapSelect, historyFilterModeSelect].forEach(select => {
+  select.addEventListener('change', () => {
+    historyFilters.agent = historyFilterAgentSelect.value;
+    historyFilters.map = historyFilterMapSelect.value;
+    historyFilters.mode = historyFilterModeSelect.value;
+    renderMatchHistoryTable();
+  });
+});
+
+historyFilterResetBtn.addEventListener('click', () => {
+  historyFilters.agent = 'all';
+  historyFilters.map = 'all';
+  historyFilters.mode = 'all';
+  refreshHistoryFilterOptions();
+  renderMatchHistoryTable();
+});
+
+function renderMatchHistoryTable() {
   matchHistoryBody.innerHTML = '';
+
+  const filteredMatches = matches.filter(m =>
+    (historyFilters.agent === 'all' || m.agent === historyFilters.agent) &&
+    (historyFilters.map === 'all' || m.map === historyFilters.map) &&
+    (historyFilters.mode === 'all' || m.mode === historyFilters.mode)
+  );
+  const filterActive = historyFilters.agent !== 'all' || historyFilters.map !== 'all' || historyFilters.mode !== 'all';
 
   if (matches.length === 0) {
     noMatchesText.style.display = 'block';
     noMatchesText.textContent = 'Aucune partie enregistrée. Journalise ta première manche ci-dessus.';
+  } else if (filteredMatches.length === 0) {
+    noMatchesText.style.display = 'block';
+    noMatchesText.textContent = 'Aucune partie ne correspond à ce filtre.';
   } else {
     noMatchesText.style.display = 'none';
   }
 
-  const visibleMatches = matches.slice().reverse().slice(0, MAX_VISIBLE_MATCHES);
+  const visibleMatches = filteredMatches.slice().reverse().slice(0, MAX_VISIBLE_MATCHES);
 
   visibleMatches.forEach(match => {
     const ratio = match.deaths === 0
@@ -2833,6 +3662,14 @@ function renderMatches() {
     tdRatio.textContent = ratio;
     tdRatio.className = parseFloat(ratio) >= 1 ? 'kd-good' : 'kd-bad';
 
+    const tdEdit = document.createElement('td');
+    const editBtn = document.createElement('button');
+    editBtn.type = 'button';
+    editBtn.className = 'edit-btn';
+    editBtn.textContent = 'Modifier';
+    editBtn.onclick = () => startEditMatch(match.id);
+    tdEdit.appendChild(editBtn);
+
     const tdShare = document.createElement('td');
     const shareBtn = document.createElement('button');
     shareBtn.type = 'button';
@@ -2858,18 +3695,29 @@ function renderMatches() {
     tr.appendChild(tdDeaths);
     tr.appendChild(tdAssists);
     tr.appendChild(tdRatio);
+    tr.appendChild(tdEdit);
     tr.appendChild(tdShare);
     tr.appendChild(tdDelete);
 
     matchHistoryBody.appendChild(tr);
   });
 
-  if (matches.length > MAX_VISIBLE_MATCHES) {
+  if (filteredMatches.length > MAX_VISIBLE_MATCHES) {
     historyNote.style.display = 'block';
-    historyNote.textContent = `Affichage des ${MAX_VISIBLE_MATCHES} parties les plus récentes — ${matches.length} au total (les statistiques ci-dessus tiennent compte de toutes).`;
+    historyNote.textContent = filterActive
+      ? `Affichage des ${MAX_VISIBLE_MATCHES} parties les plus récentes correspondant au filtre — ${filteredMatches.length} au total (sur ${matches.length} parties).`
+      : `Affichage des ${MAX_VISIBLE_MATCHES} parties les plus récentes — ${matches.length} au total (les statistiques ci-dessus tiennent compte de toutes).`;
+  } else if (filterActive && filteredMatches.length > 0) {
+    historyNote.style.display = 'block';
+    historyNote.textContent = `${filteredMatches.length} partie(s) correspondant au filtre, sur ${matches.length} au total.`;
   } else {
     historyNote.style.display = 'none';
   }
+}
+
+function renderMatches() {
+  refreshHistoryFilterOptions();
+  renderMatchHistoryTable();
 
   updateStatusBar();
   updateStreakRecords();
@@ -2877,6 +3725,10 @@ function renderMatches() {
   refreshPerfAgentFilter();
   renderPerformance();
   renderMapStats();
+  renderRoleStats();
+  renderAgentSpotlight();
+  renderWeeklyOverview();
+  updateReplayButtonState();
   if (typeof renderObjectives === 'function') renderObjectives();
   if (typeof renderBadges === 'function') renderBadges();
 }
@@ -3130,13 +3982,57 @@ function renderTopFlop(selectedAgent, scopedMatches) {
   flop3.forEach(m => perfFlop3List.appendChild(buildItem(m, 'kd-bad')));
 }
 
+/* ---------- Annuler une suppression (toast, 5 secondes) ---------- */
+
+const undoToast = document.getElementById('undo-toast');
+const undoToastText = document.getElementById('undo-toast-text');
+const undoToastBtn = document.getElementById('undo-toast-btn');
+
+let pendingUndo = null;
+let undoTimeoutId = null;
+
+function showUndoToast(match, index) {
+  pendingUndo = { match, index };
+  undoToastText.textContent = `Partie supprimée (${match.agent}).`;
+
+  // Redémarre l'animation de la barre de temps même si un toast était déjà affiché
+  undoToast.classList.remove('visible');
+  void undoToast.offsetWidth;
+  undoToast.classList.add('visible');
+
+  if (undoTimeoutId) clearTimeout(undoTimeoutId);
+  undoTimeoutId = setTimeout(hideUndoToast, 5000);
+}
+
+function hideUndoToast() {
+  undoToast.classList.remove('visible');
+  pendingUndo = null;
+  if (undoTimeoutId) {
+    clearTimeout(undoTimeoutId);
+    undoTimeoutId = null;
+  }
+}
+
+undoToastBtn.addEventListener('click', () => {
+  if (!pendingUndo) return;
+  const { match, index } = pendingUndo;
+  const insertAt = Math.min(index, matches.length);
+  matches.splice(insertAt, 0, match);
+  hideUndoToast();
+  renderMatches();
+  saveMatches();
+});
+
 function deleteMatch(id) {
   const index = matches.findIndex(m => m.id === id);
-  if (index !== -1) {
-    matches.splice(index, 1);
-    renderMatches();
-    saveMatches();
-  }
+  if (index === -1) return;
+
+  const [removed] = matches.splice(index, 1);
+  if (editingMatchId === id) cancelEditMatch();
+
+  renderMatches();
+  saveMatches();
+  showUndoToast(removed, index);
 }
 
 function saveMatches() {
@@ -3210,6 +4106,228 @@ function renderMapStats() {
     tr.appendChild(tdAvgKills);
 
     mapStatsBody.appendChild(tr);
+  });
+}
+
+/* ---------- Statistiques par rôle ---------- */
+
+const roleStatsBody = document.getElementById('role-stats-body');
+const roleStatsEmpty = document.getElementById('role-stats-empty');
+const ROLE_ORDER = Object.keys(data);
+
+function renderRoleStats() {
+  roleStatsBody.innerHTML = '';
+
+  if (matches.length === 0) {
+    roleStatsEmpty.style.display = 'block';
+    return;
+  }
+
+  const byRole = {};
+  matches.forEach(match => {
+    const role = agentRoleMap[match.agent];
+    if (!role) return;
+    if (!byRole[role]) {
+      byRole[role] = { count: 0, wins: 0, kills: 0, kdSum: 0 };
+    }
+    byRole[role].count += 1;
+    byRole[role].kills += match.kills;
+    byRole[role].kdSum += matchKd(match);
+    if (matchResult(match) === 'Victoire') byRole[role].wins += 1;
+  });
+
+  const rows = ROLE_ORDER.filter(role => byRole[role]);
+
+  if (rows.length === 0) {
+    roleStatsEmpty.style.display = 'block';
+    return;
+  }
+  roleStatsEmpty.style.display = 'none';
+
+  rows.forEach(role => {
+    const stats = byRole[role];
+    const tr = document.createElement('tr');
+
+    const tdRole = document.createElement('td');
+    tdRole.textContent = role;
+    tdRole.style.color = ROLE_COLORS[role] || 'inherit';
+    tdRole.style.fontWeight = '700';
+
+    const tdCount = document.createElement('td');
+    tdCount.textContent = stats.count;
+
+    const tdWins = document.createElement('td');
+    tdWins.textContent = stats.wins;
+
+    const winrate = (stats.wins / stats.count) * 100;
+    const tdWinrate = document.createElement('td');
+    tdWinrate.textContent = `${winrate.toFixed(0)}%`;
+    tdWinrate.className = winrate >= 50 ? 'kd-good' : 'kd-bad';
+
+    const avgKd = stats.kdSum / stats.count;
+    const tdAvgKd = document.createElement('td');
+    tdAvgKd.textContent = avgKd.toFixed(2);
+    tdAvgKd.className = avgKd >= 1 ? 'kd-good' : 'kd-bad';
+
+    const tdAvgKills = document.createElement('td');
+    tdAvgKills.textContent = (stats.kills / stats.count).toFixed(1);
+
+    tr.appendChild(tdRole);
+    tr.appendChild(tdCount);
+    tr.appendChild(tdWins);
+    tr.appendChild(tdWinrate);
+    tr.appendChild(tdAvgKd);
+    tr.appendChild(tdAvgKills);
+
+    roleStatsBody.appendChild(tr);
+  });
+}
+
+/* ---------- Agent du moment (le plus joué / meilleur K/D) ---------- */
+
+const MIN_MATCHES_FOR_BEST_KD = 3;
+
+const spotlightMostEl = document.getElementById('spotlight-most-played');
+const spotlightMostSubEl = document.getElementById('spotlight-most-played-sub');
+const spotlightKdEl = document.getElementById('spotlight-best-kd');
+const spotlightKdSubEl = document.getElementById('spotlight-best-kd-sub');
+
+function computeAgentSpotlight() {
+  const counts = {};
+  const sums = {};
+
+  matches.forEach(m => {
+    counts[m.agent] = (counts[m.agent] || 0) + 1;
+    if (!sums[m.agent]) sums[m.agent] = { kills: 0, deaths: 0 };
+    sums[m.agent].kills += m.kills;
+    sums[m.agent].deaths += m.deaths;
+  });
+
+  let mostPlayedAgent = null;
+  let mostPlayedCount = 0;
+  Object.entries(counts).forEach(([agent, count]) => {
+    if (count > mostPlayedCount) { mostPlayedCount = count; mostPlayedAgent = agent; }
+  });
+
+  let bestKdAgent = null;
+  let bestKdValue = -Infinity;
+  Object.entries(sums).forEach(([agent, s]) => {
+    if (counts[agent] < MIN_MATCHES_FOR_BEST_KD) return;
+    const kd = s.deaths === 0 ? s.kills : s.kills / s.deaths;
+    if (kd > bestKdValue) { bestKdValue = kd; bestKdAgent = agent; }
+  });
+
+  return { mostPlayedAgent, mostPlayedCount, bestKdAgent, bestKdValue };
+}
+
+function renderAgentSpotlight() {
+  if (matches.length === 0) {
+    spotlightMostEl.textContent = '—';
+    spotlightMostSubEl.textContent = 'Journalise des parties pour voir ton agent du moment.';
+    spotlightKdEl.textContent = '—';
+    spotlightKdSubEl.textContent = '';
+    return;
+  }
+
+  const spotlight = computeAgentSpotlight();
+
+  spotlightMostEl.textContent = spotlight.mostPlayedAgent || '—';
+  spotlightMostSubEl.textContent = spotlight.mostPlayedAgent
+    ? `${spotlight.mostPlayedCount} partie${spotlight.mostPlayedCount > 1 ? 's' : ''} jouée${spotlight.mostPlayedCount > 1 ? 's' : ''}`
+    : '';
+
+  if (spotlight.bestKdAgent) {
+    spotlightKdEl.textContent = spotlight.bestKdAgent;
+    spotlightKdSubEl.textContent = `K/D ${spotlight.bestKdValue.toFixed(2)}`;
+  } else {
+    spotlightKdEl.textContent = '—';
+    spotlightKdSubEl.textContent = `Il faut au moins ${MIN_MATCHES_FOR_BEST_KD} parties avec un même agent`;
+  }
+}
+
+/* ---------- Aperçu hebdomadaire (7 derniers jours) ---------- */
+
+const weekMatchCountEl = document.getElementById('week-match-count');
+const weekKdEl = document.getElementById('week-kd');
+const weekDaysEl = document.getElementById('week-days');
+const weekEmptyEl = document.getElementById('week-empty');
+const WEEK_BAR_MAX_HEIGHT = 70;
+
+function computeWeeklyOverview() {
+  const now = Date.now();
+  const cutoff = now - 7 * 24 * 60 * 60 * 1000;
+  const weekMatches = matches.filter(m => typeof m.timestamp === 'number' && m.timestamp >= cutoff);
+
+  const totalKills = weekMatches.reduce((sum, m) => sum + m.kills, 0);
+  const totalDeaths = weekMatches.reduce((sum, m) => sum + m.deaths, 0);
+  const kd = weekMatches.length === 0 ? null : (totalDeaths === 0 ? totalKills : totalKills / totalDeaths);
+
+  const days = [];
+  for (let i = 6; i >= 0; i--) {
+    const dayStart = new Date();
+    dayStart.setHours(0, 0, 0, 0);
+    dayStart.setDate(dayStart.getDate() - i);
+    const dayEnd = new Date(dayStart);
+    dayEnd.setDate(dayEnd.getDate() + 1);
+
+    const dayMatches = weekMatches.filter(m => m.timestamp >= dayStart.getTime() && m.timestamp < dayEnd.getTime());
+    const dKills = dayMatches.reduce((sum, m) => sum + m.kills, 0);
+    const dDeaths = dayMatches.reduce((sum, m) => sum + m.deaths, 0);
+    const dKd = dayMatches.length === 0 ? null : (dDeaths === 0 ? dKills : dKills / dDeaths);
+
+    days.push({
+      label: dayStart.toLocaleDateString('fr-FR', { weekday: 'short' }).replace('.', ''),
+      count: dayMatches.length,
+      kd: dKd
+    });
+  }
+
+  return { count: weekMatches.length, kd, days };
+}
+
+function renderWeeklyOverview() {
+  const overview = computeWeeklyOverview();
+
+  weekMatchCountEl.textContent = overview.count;
+  weekKdEl.textContent = overview.kd === null ? '—' : overview.kd.toFixed(2);
+
+  const hasAnyDatedMatch = matches.some(m => typeof m.timestamp === 'number');
+  if (matches.length > 0 && !hasAnyDatedMatch) {
+    weekEmptyEl.style.display = 'block';
+    weekEmptyEl.textContent = 'Les parties journalisées avant cette mise à jour n\'ont pas de date enregistrée : le suivi hebdomadaire démarre avec tes prochaines parties.';
+  } else {
+    weekEmptyEl.style.display = 'none';
+  }
+
+  weekDaysEl.innerHTML = '';
+  const maxCount = Math.max(1, ...overview.days.map(d => d.count));
+
+  overview.days.forEach(day => {
+    const col = document.createElement('div');
+    col.className = 'week-day';
+
+    const countLabel = document.createElement('span');
+    countLabel.className = 'week-day-count';
+    countLabel.textContent = day.count;
+
+    const bar = document.createElement('div');
+    bar.className = 'week-day-bar' + (day.count === 0 ? ' no-match' : '');
+    const barHeight = day.count === 0 ? 4 : Math.max(10, (day.count / maxCount) * WEEK_BAR_MAX_HEIGHT);
+    bar.style.height = `${barHeight}px`;
+
+    const kdLabel = document.createElement('span');
+    kdLabel.className = 'week-day-kd' + (day.kd === null ? '' : (day.kd >= 1 ? ' kd-good' : ' kd-bad'));
+    kdLabel.textContent = day.kd === null ? '—' : day.kd.toFixed(1);
+
+    const dayLabel = document.createElement('span');
+    dayLabel.className = 'week-day-label';
+    dayLabel.textContent = day.label;
+
+    col.appendChild(countLabel);
+    col.appendChild(bar);
+    col.appendChild(kdLabel);
+    col.appendChild(dayLabel);
+    weekDaysEl.appendChild(col);
   });
 }
 
@@ -3460,6 +4578,60 @@ if (importBtn && importInput) {
     };
     reader.readAsText(file);
     importInput.value = '';
+  });
+}
+
+/* ================================================================
+   TOUT RÉINITIALISER (zone de danger)
+   ================================================================ */
+
+const resetAllBtn = document.getElementById('reset-all-btn');
+const resetStatus = document.getElementById('reset-status');
+
+if (resetAllBtn) {
+  resetAllBtn.addEventListener('click', () => {
+    const confirmed = confirm(
+      'Cette action va supprimer DÉFINITIVEMENT toutes tes données : agents débloqués, historique des parties, objectifs et records de séries. Cette action est irréversible. Continuer ?'
+    );
+    if (!confirmed) return;
+
+    // Vide le stockage local
+    localStorage.removeItem(STORAGE_KEY_AGENTS);
+    localStorage.removeItem(STORAGE_KEY_MATCHES);
+    localStorage.removeItem(STORAGE_KEY_OBJECTIVES);
+    localStorage.removeItem(STORAGE_KEY_STREAK_RECORDS);
+
+    // Referme toute modification / notification en cours
+    if (editingMatchId !== null) cancelEditMatch();
+    hideUndoToast();
+
+    // Réinitialise l'état en mémoire (state/matches/objectives/streakRecords
+    // sont des const : on les vide plutôt que de les réaffecter)
+    Object.keys(state).forEach(agent => { state[agent] = false; });
+    matches.length = 0;
+    objectives.length = 0;
+    streakRecords.bestWinStreak = 0;
+    streakRecords.bestLossStreak = 0;
+    streakRecords.bestImmortalStreak = 0;
+    matchIdCounter = 0;
+    objectiveIdCounter = 0;
+
+    // Redessine les cases à cocher du roster
+    document.querySelectorAll('.grid tr').forEach(row => {
+      row.classList.remove('checked');
+      const cb = row.querySelector('input[type="checkbox"]');
+      if (cb) cb.checked = false;
+    });
+    for (const role in ROLE_COLORS) updateRoleCount(role);
+    updateGlobalCount();
+
+    renderMatches();
+    renderObjectives();
+    renderBadges();
+
+    resetStatus.style.display = 'block';
+    resetStatus.textContent = 'Toutes les données ont été réinitialisées.';
+    resetStatus.style.color = 'var(--neon)';
   });
 }
 
@@ -3955,6 +5127,16 @@ const BADGES = [
     icon: 'crown',
     tier: 'extreme',
     check: () => matches.length >= 500
+  },
+
+  /* ---- Impossible ---- */
+  {
+    id: 'impossible-completionist',
+    name: 'Défi impossible',
+    desc: 'Débloquer TOUS les autres badges de ce tracker',
+    icon: 'impossible',
+    tier: 'impossible',
+    check: () => BADGES.filter(b => b.id !== 'impossible-completionist').every(b => b.check())
   }
 ];
 
@@ -3978,7 +5160,8 @@ const BADGE_ICONS = {
   medal: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="15" r="5"/><path d="M9 11 6 3h3l3 6 3-6h3l-3 8"/></svg>',
   checklist: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6h11M9 12h11M9 18h11"/><path d="M3 6l1 1 2-2M3 12l1 1 2-2M3 18l1 1 2-2"/></svg>',
   crown: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 18h16M4 18 2 8l5 4 5-7 5 7 5-4-2 10"/></svg>',
-  diamond: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3h12l4 6-10 12L2 9z"/><path d="M2 9h20M9 3l3 6-3 12M15 3l-3 6 3 12"/></svg>'
+  diamond: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3h12l4 6-10 12L2 9z"/><path d="M2 9h20M9 3l3 6-3 12M15 3l-3 6 3 12"/></svg>',
+  impossible: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M12 2l2.4 4.3L19 4.4l-1.1 5 4.9 1-3.9 3.1 3.9 3.1-4.9 1 1.1 5-4.6-1.9L12 22l-2.4-4.3L5 19.6l1.1-5-4.9-1 3.9-3.1L1.2 7.4l4.9-1-1.1-5 4.6 1.9z"/></svg>'
 };
 
 const badgesGrid = document.getElementById('badges-grid');
@@ -3988,7 +5171,8 @@ const TIER_LABELS = {
   facile: 'Facile',
   moyen: 'Moyen',
   difficile: 'Difficile',
-  extreme: 'Extrême'
+  extreme: 'Extrême',
+  impossible: 'Impossible'
 };
 
 function renderBadges() {
@@ -4001,8 +5185,10 @@ function renderBadges() {
     const unlocked = badge.check();
     if (unlocked) unlockedCount += 1;
 
+    const isImpossible = badge.tier === 'impossible';
+
     const card = document.createElement('div');
-    card.className = `badge-card ${unlocked ? 'unlocked' : ''}`;
+    card.className = `badge-card${isImpossible ? ' badge-impossible' : ''} ${unlocked ? 'unlocked' : ''}`;
 
     const tier = document.createElement('div');
     tier.className = `badge-tier tier-${badge.tier || 'facile'}`;
@@ -4020,10 +5206,46 @@ function renderBadges() {
     desc.className = 'badge-desc';
     desc.textContent = badge.desc;
 
-    card.appendChild(tier);
-    card.appendChild(iconWrap);
-    card.appendChild(name);
-    card.appendChild(desc);
+    if (isImpossible) {
+      const otherBadges = BADGES.filter(b => b.id !== badge.id);
+      const doneCount = otherBadges.filter(b => b.check()).length;
+      const totalCount = otherBadges.length;
+      const pct = totalCount === 0 ? 100 : Math.round((doneCount / totalCount) * 100);
+
+      const progress = document.createElement('div');
+      progress.className = 'badge-progress';
+
+      const progressBarBg = document.createElement('div');
+      progressBarBg.className = 'badge-progress-bar-bg';
+      const progressBarFill = document.createElement('div');
+      progressBarFill.className = 'badge-progress-bar-fill';
+      progressBarFill.style.width = `${pct}%`;
+      progressBarBg.appendChild(progressBarFill);
+
+      const progressLabel = document.createElement('span');
+      progressLabel.className = 'badge-progress-label';
+      progressLabel.textContent = unlocked
+        ? 'Tous les badges sont débloqués !'
+        : `${doneCount} / ${totalCount} autres badges débloqués (${pct}%)`;
+
+      progress.appendChild(progressBarBg);
+      progress.appendChild(progressLabel);
+
+      const content = document.createElement('div');
+      content.className = 'badge-impossible-content';
+      content.appendChild(name);
+      content.appendChild(desc);
+      content.appendChild(progress);
+
+      card.appendChild(content);
+      card.appendChild(tier);
+    } else {
+      card.appendChild(tier);
+      card.appendChild(iconWrap);
+      card.appendChild(name);
+      card.appendChild(desc);
+    }
+
     badgesGrid.appendChild(card);
   });
 
@@ -4037,7 +5259,6 @@ renderBadges();
 /* Rendu initial (doit s'exécuter après la déclaration de tous les éléments précédents) */
 
 renderMatches();
-
 </script>
 </body>
 </html>
