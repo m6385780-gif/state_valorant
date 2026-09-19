@@ -2783,7 +2783,8 @@ input[type="checkbox"]:focus-visible {
   <a href="#role-stats-section">07 · Rôles</a>
   <a href="#objectives-section">08 · Objectifs</a>
   <a href="#badges-section">09 · Badges</a>
-  <a href="#backup-section">10 · Sauvegarde</a>
+  <a href="#valorant-import-section">10 · Compte Valorant</a>
+  <a href="#backup-section">11 · Sauvegarde</a>
 </nav>
 
 <section class="status-bar reveal" aria-label="Statut de mission">
@@ -3111,9 +3112,54 @@ input[type="checkbox"]:focus-visible {
   <div class="badges-grid" id="badges-grid"></div>
 </section>
 
-<section class="match-section hud-frame reveal" id="backup-section">
+<section class="match-section hud-frame reveal" id="valorant-import-section">
   <div class="section-header">
     <span class="section-index">10</span>
+    <h2>Compte Valorant</h2>
+  </div>
+  <p class="backup-note">
+    Connecte ton compte pour importer automatiquement tes dernières parties. Tes identifiants (clé API, pseudo, tag) restent
+    enregistrés uniquement dans <strong>ce navigateur</strong> — ils ne sont jamais partagés avec les autres visiteurs du site,
+    même si vous utilisez le même lien. Chaque personne doit saisir ses propres identifiants.
+  </p>
+
+  <form id="valorant-creds-form" class="match-form" style="margin-top:14px;">
+    <div class="field" style="flex:2; min-width:220px;">
+      <label for="valorant-api-key">Clé API HenrikDev</label>
+      <input type="password" id="valorant-api-key" placeholder="Obtenue sur le Discord HenrikDev" autocomplete="off">
+    </div>
+    <div class="field">
+      <label for="valorant-riot-name">Pseudo Riot</label>
+      <input type="text" id="valorant-riot-name" placeholder="Ex : Henrik3" autocomplete="off">
+    </div>
+    <div class="field">
+      <label for="valorant-riot-tag">Tag</label>
+      <input type="text" id="valorant-riot-tag" placeholder="Ex : EUW3" autocomplete="off">
+    </div>
+    <div class="field">
+      <label for="valorant-region">Serveur</label>
+      <select id="valorant-region">
+        <option value="eu">Europe</option>
+        <option value="na">Amérique du Nord</option>
+        <option value="latam">Amérique Latine</option>
+        <option value="br">Brésil</option>
+        <option value="ap">Asie-Pacifique</option>
+        <option value="kr">Corée</option>
+      </select>
+    </div>
+    <button type="submit" class="submit-btn">Sauvegarder mes identifiants</button>
+    <button type="button" class="cancel-btn" id="valorant-forget-btn">Oublier mes identifiants</button>
+  </form>
+
+  <div class="controls" style="margin: 16px 0 0;">
+    <button type="button" id="valorant-import-btn" class="perf-btn">Importer mes dernières parties</button>
+  </div>
+  <p id="valorant-import-status" class="history-note" style="display:none;"></p>
+</section>
+
+<section class="match-section hud-frame reveal" id="backup-section">
+  <div class="section-header">
+    <span class="section-index">11</span>
     <h2>Sauvegarde des données</h2>
   </div>
   <p class="backup-note">Tes données sont stockées uniquement dans ce navigateur. Exporte-les pour les garder en sécurité ou les transférer sur un autre appareil.</p>
@@ -5255,6 +5301,252 @@ function renderBadges() {
 }
 
 renderBadges();
+
+/* ================================================================
+   IMPORT DEPUIS LE COMPTE VALORANT (API communautaire HenrikDev)
+   ================================================================
+
+   Chaque visiteur saisit SA PROPRE clé API + pseudo/tag Riot.
+   Ces identifiants sont enregistrés uniquement dans le localStorage
+   de son propre navigateur (comme le reste des données du tracker) —
+   ils ne sont jamais envoyés ailleurs qu'à l'API HenrikDev elle-même,
+   et ne sont jamais partagés entre les visiteurs du site.
+
+   Cette API n'est pas officielle (Riot ne délivre pas de clé
+   personnelle pour Valorant) : https://docs.henrikdev.xyz
+   ================================================================ */
+
+const STORAGE_KEY_VALORANT_CREDS = 'valorant_api_credentials';
+
+const valorantCredsForm = document.getElementById('valorant-creds-form');
+const valorantApiKeyInput = document.getElementById('valorant-api-key');
+const valorantRiotNameInput = document.getElementById('valorant-riot-name');
+const valorantRiotTagInput = document.getElementById('valorant-riot-tag');
+const valorantRegionSelect = document.getElementById('valorant-region');
+const valorantForgetBtn = document.getElementById('valorant-forget-btn');
+const valorantImportBtn = document.getElementById('valorant-import-btn');
+const valorantImportStatus = document.getElementById('valorant-import-status');
+
+function loadValorantCreds() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY_VALORANT_CREDS) || 'null');
+    if (!saved) return;
+    if (valorantApiKeyInput) valorantApiKeyInput.value = saved.apiKey || '';
+    if (valorantRiotNameInput) valorantRiotNameInput.value = saved.name || '';
+    if (valorantRiotTagInput) valorantRiotTagInput.value = saved.tag || '';
+    if (valorantRegionSelect && saved.region) valorantRegionSelect.value = saved.region;
+  } catch (e) {
+    // Identifiants corrompus ou absents : on repart d'un formulaire vide.
+  }
+}
+
+function saveValorantCreds() {
+  const creds = {
+    apiKey: valorantApiKeyInput.value.trim(),
+    name: valorantRiotNameInput.value.trim(),
+    tag: valorantRiotTagInput.value.trim(),
+    region: valorantRegionSelect.value
+  };
+  localStorage.setItem(STORAGE_KEY_VALORANT_CREDS, JSON.stringify(creds));
+  return creds;
+}
+
+function showValorantStatus(message, isError) {
+  if (!valorantImportStatus) return;
+  valorantImportStatus.style.display = 'block';
+  valorantImportStatus.textContent = message;
+  valorantImportStatus.style.color = isError ? 'var(--red)' : 'var(--neon)';
+}
+
+if (valorantCredsForm) {
+  loadValorantCreds();
+
+  valorantCredsForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    saveValorantCreds();
+    showValorantStatus('Identifiants sauvegardés dans ce navigateur.', false);
+  });
+}
+
+if (valorantForgetBtn) {
+  valorantForgetBtn.addEventListener('click', () => {
+    localStorage.removeItem(STORAGE_KEY_VALORANT_CREDS);
+    valorantApiKeyInput.value = '';
+    valorantRiotNameInput.value = '';
+    valorantRiotTagInput.value = '';
+    valorantRegionSelect.value = 'eu';
+    showValorantStatus('Identifiants oubliés sur cet appareil.', false);
+  });
+}
+
+// Traçabilité des parties déjà importées, pour ne jamais créer de doublon
+// même si l'import est relancé plusieurs fois.
+const STORAGE_KEY_IMPORTED_MATCH_IDS = 'valorant_imported_match_ids';
+
+function getImportedMatchIds() {
+  try {
+    return new Set(JSON.parse(localStorage.getItem(STORAGE_KEY_IMPORTED_MATCH_IDS) || '[]'));
+  } catch (e) {
+    return new Set();
+  }
+}
+
+function saveImportedMatchIds(idSet) {
+  localStorage.setItem(STORAGE_KEY_IMPORTED_MATCH_IDS, JSON.stringify([...idSet]));
+}
+
+// Correspondance entre le nom de mode renvoyé par l'API (en anglais) et les
+// libellés déjà utilisés dans le journal manuel, pour rester cohérent.
+const VALORANT_MODE_LABELS = {
+  'competitive': 'Compétitif',
+  'unrated': 'Non classé',
+  'deathmatch': 'Deathmatch',
+  'escalation': 'Escalade',
+  'team deathmatch': 'Équipe déathmatch',
+  'spike rush': 'Spike Rush',
+  'swiftplay': 'Swiftplay',
+  'custom': 'Personnalisée',
+  'premier': 'Compétitif'
+};
+
+function mapValorantMode(rawMode) {
+  if (!rawMode) return 'Non classé';
+  const key = String(rawMode).toLowerCase();
+  return VALORANT_MODE_LABELS[key] || rawMode;
+}
+
+// Certains modes (Deathmatch, Escalade, Spike Rush...) n'ont pas d'équipes
+// "Red"/"Blue" avec un score à deux camps comparable au mode par équipes.
+function extractTeamScores(match, playerTeam) {
+  const teams = match.teams;
+  if (!teams || !playerTeam) return { scoreTeam: undefined, scoreEnemy: undefined };
+  const teamKey = playerTeam.toLowerCase();
+  const enemyKey = teamKey === 'red' ? 'blue' : 'red';
+  const teamData = teams[teamKey];
+  const enemyData = teams[enemyKey];
+  if (!teamData || typeof teamData.rounds_won !== 'number') {
+    return { scoreTeam: undefined, scoreEnemy: undefined };
+  }
+  return {
+    scoreTeam: teamData.rounds_won,
+    scoreEnemy: enemyData ? enemyData.rounds_won : undefined
+  };
+}
+
+async function importValorantMatches() {
+  const creds = saveValorantCreds();
+
+  if (!creds.apiKey || !creds.name || !creds.tag) {
+    showValorantStatus('Renseigne ta clé API, ton pseudo et ton tag avant d\'importer.', true);
+    return;
+  }
+
+  valorantImportBtn.disabled = true;
+  const originalLabel = valorantImportBtn.textContent;
+  valorantImportBtn.textContent = 'Import en cours…';
+  showValorantStatus('Récupération de tes dernières parties…', false);
+
+  try {
+    const url = `https://api.henrikdev.xyz/valorant/v3/matches/${encodeURIComponent(creds.region)}/${encodeURIComponent(creds.name)}/${encodeURIComponent(creds.tag)}?size=15`;
+    const response = await fetch(url, {
+      headers: { 'Authorization': creds.apiKey }
+    });
+
+    if (response.status === 401 || response.status === 403) {
+      throw new Error('Clé API refusée. Vérifie qu\'elle est correcte et toujours valide.');
+    }
+    if (response.status === 404) {
+      throw new Error('Compte introuvable. Vérifie le pseudo, le tag et le serveur.');
+    }
+    if (response.status === 429) {
+      throw new Error('Trop de requêtes pour le moment. Réessaie dans une minute.');
+    }
+    if (!response.ok) {
+      throw new Error(`Erreur de l'API (code ${response.status}). Réessaie plus tard.`);
+    }
+
+    const payload = await response.json();
+    const rawMatches = Array.isArray(payload.data) ? payload.data : [];
+
+    if (rawMatches.length === 0) {
+      showValorantStatus('Aucune partie récente trouvée pour ce compte.', false);
+      return;
+    }
+
+    const importedIds = getImportedMatchIds();
+    let addedCount = 0;
+    let skippedCount = 0;
+
+    rawMatches.forEach(match => {
+      const matchId = match.metadata && match.metadata.matchid;
+      if (!matchId || importedIds.has(matchId)) {
+        if (matchId) skippedCount += 1;
+        return;
+      }
+
+      const allPlayers = (match.players && match.players.all_players) || [];
+      const me = allPlayers.find(p =>
+        p.name && p.tag &&
+        p.name.toLowerCase() === creds.name.toLowerCase() &&
+        p.tag.toLowerCase() === creds.tag.toLowerCase()
+      );
+      if (!me) {
+        skippedCount += 1;
+        return;
+      }
+
+      const stats = me.stats || me;
+      const { scoreTeam, scoreEnemy } = extractTeamScores(match, me.team);
+      const gameStartSeconds = match.metadata && match.metadata.game_start;
+
+      matchIdCounter += 1;
+      matches.push({
+        id: matchIdCounter,
+        agent: me.character || 'Inconnu',
+        map: (match.metadata && match.metadata.map) || '',
+        mode: mapValorantMode(match.metadata && (match.metadata.mode_id || match.metadata.mode)),
+        scoreTeam,
+        scoreEnemy,
+        kills: stats.kills || 0,
+        deaths: stats.deaths || 0,
+        assists: stats.assists || 0,
+        timestamp: gameStartSeconds ? gameStartSeconds * 1000 : Date.now(),
+        importedFromApi: true
+      });
+
+      importedIds.add(matchId);
+      addedCount += 1;
+    });
+
+    saveImportedMatchIds(importedIds);
+
+    if (addedCount > 0) {
+      saveMatches();
+      renderMatches();
+    }
+
+    if (addedCount === 0) {
+      showValorantStatus('Aucune nouvelle partie à importer (déjà à jour).', false);
+    } else {
+      showValorantStatus(
+        `${addedCount} partie${addedCount > 1 ? 's' : ''} importée${addedCount > 1 ? 's' : ''}` +
+        (skippedCount > 0 ? ` (${skippedCount} déjà connue${skippedCount > 1 ? 's' : ''} ou ignorée${skippedCount > 1 ? 's' : ''}).` : '.'),
+        false
+      );
+    }
+  } catch (err) {
+    const message = (err && err.message) ? err.message
+      : 'Impossible de contacter l\'API. Vérifie ta connexion et réessaie.';
+    showValorantStatus(message, true);
+  } finally {
+    valorantImportBtn.disabled = false;
+    valorantImportBtn.textContent = originalLabel;
+  }
+}
+
+if (valorantImportBtn) {
+  valorantImportBtn.addEventListener('click', importValorantMatches);
+}
 
 /* Rendu initial (doit s'exécuter après la déclaration de tous les éléments précédents) */
 
