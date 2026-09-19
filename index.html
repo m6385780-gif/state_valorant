@@ -1535,6 +1535,111 @@ input[type="checkbox"] {
   }
 }
 
+/* ---------- Tutoriel dépliable (Compte Valorant) ---------- */
+
+.valorant-howto {
+  margin: 16px 0 0;
+  background: #0a0810;
+  border: 1px solid var(--border);
+}
+
+.valorant-howto summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 12px 16px;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--neon);
+  text-shadow: 0 0 5px var(--neon-glow);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background 0.2s ease;
+}
+
+.valorant-howto summary::-webkit-details-marker { display: none; }
+
+.valorant-howto summary::before {
+  content: '▸';
+  display: inline-block;
+  transition: transform 0.2s ease;
+  color: var(--purple);
+}
+
+.valorant-howto[open] summary::before {
+  transform: rotate(90deg);
+}
+
+.valorant-howto summary:hover {
+  background: var(--panel-alt);
+}
+
+.valorant-howto-body {
+  padding: 4px 18px 18px;
+  border-top: 1px solid var(--border);
+}
+
+.valorant-howto-body h3 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
+  color: var(--text);
+  margin: 16px 0 8px;
+}
+
+.valorant-howto-body h3:first-child {
+  margin-top: 14px;
+}
+
+.valorant-howto-body ol {
+  margin: 0;
+  padding-left: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.valorant-howto-body li {
+  color: var(--muted);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.valorant-howto-body a {
+  color: var(--purple);
+  text-shadow: 0 0 4px var(--purple-glow);
+}
+
+.valorant-howto-body code {
+  font-family: var(--font-mono);
+  background: rgba(57, 255, 20, 0.08);
+  border: 1px solid var(--border);
+  color: var(--neon);
+  padding: 1px 6px;
+  font-size: 0.85em;
+}
+
+.valorant-howto-example {
+  margin: 12px 0 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+@media (max-width: 640px) {
+  .valorant-howto summary {
+    font-size: 0.75rem;
+    padding: 12px 14px;
+  }
+
+  .valorant-howto-body {
+    padding: 4px 14px 16px;
+  }
+}
+
 /* ---------- Backup ---------- */
 
 .backup-note {
@@ -3122,6 +3227,28 @@ input[type="checkbox"]:focus-visible {
     enregistrés uniquement dans <strong>ce navigateur</strong> — ils ne sont jamais partagés avec les autres visiteurs du site,
     même si vous utilisez le même lien. Chaque personne doit saisir ses propres identifiants.
   </p>
+
+  <details class="valorant-howto">
+    <summary>Comment trouver ces informations ?</summary>
+    <div class="valorant-howto-body">
+      <h3>Clé API HenrikDev</h3>
+      <ol>
+        <li>Rejoins le Discord HenrikDev : <a href="https://discord.com/invite/X3GaVkX2YN" target="_blank" rel="noopener noreferrer">discord.com/invite/X3GaVkX2YN</a></li>
+        <li>Dans le salon dédié à la génération de clé, choisis <strong>« VALORANT (Basic Key) »</strong> dans le menu déroulant du bot.</li>
+        <li>Le bot affiche immédiatement une clé (une longue chaîne de caractères) : copie-la et colle-la dans le champ « Clé API HenrikDev » ci-dessus.</li>
+        <li>Tu peux la retrouver plus tard sur <a href="https://api.henrikdev.xyz/dashboard/" target="_blank" rel="noopener noreferrer">api.henrikdev.xyz/dashboard</a> en te connectant avec le même compte Discord.</li>
+      </ol>
+
+      <h3>Pseudo Riot et Tag</h3>
+      <ol>
+        <li>Ouvre le client Valorant (ou le launcher Riot).</li>
+        <li>En haut à droite, à côté de ton nom, ton Riot ID complet s'affiche sous la forme <code>TonPseudo#1234</code>.</li>
+        <li>Tout ce qui précède le <code>#</code> va dans « Pseudo Riot ».</li>
+        <li>Tout ce qui suit le <code>#</code> (sans le <code>#</code>) va dans « Tag ».</li>
+      </ol>
+      <p class="valorant-howto-example">Exemple : pour le Riot ID <code>Henrik3#EUW3</code>, mets <code>Henrik3</code> dans Pseudo et <code>EUW3</code> dans Tag.</p>
+    </div>
+  </details>
 
   <form id="valorant-creds-form" class="match-form" style="margin-top:14px;">
     <div class="field" style="flex:2; min-width:220px;">
