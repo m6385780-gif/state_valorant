@@ -5470,8 +5470,10 @@ function loadValorantCreds() {
 function saveValorantCreds() {
   const creds = {
     apiKey: valorantApiKeyInput.value.trim(),
+    // Le tag Riot se saisit sans '#' (ex: EUW3), mais si quelqu'un colle
+    // "#EUW3" ou " EUW3 " par réflexe, on nettoie avant l'appel API.
     name: valorantRiotNameInput.value.trim(),
-    tag: valorantRiotTagInput.value.trim(),
+    tag: valorantRiotTagInput.value.trim().replace(/^#/, ''),
     region: valorantRegionSelect.value
   };
   localStorage.setItem(STORAGE_KEY_VALORANT_CREDS, JSON.stringify(creds));
@@ -5579,17 +5581,34 @@ async function importValorantMatches() {
       headers: { 'Authorization': creds.apiKey }
     });
 
-    if (response.status === 401 || response.status === 403) {
-      throw new Error('Clé API refusée. Vérifie qu\'elle est correcte et toujours valide.');
-    }
-    if (response.status === 404) {
-      throw new Error('Compte introuvable. Vérifie le pseudo, le tag et le serveur.');
-    }
-    if (response.status === 429) {
-      throw new Error('Trop de requêtes pour le moment. Réessaie dans une minute.');
-    }
     if (!response.ok) {
-      throw new Error(`Erreur de l'API (code ${response.status}). Réessaie plus tard.`);
+      // On récupère le message brut renvoyé par l'API HenrikDev (champ
+      // "message" ou "errors"), pour un diagnostic précis plutôt qu'un
+      // message générique qui masque la vraie cause.
+      let rawDetail = '';
+      try {
+        const errPayload = await response.json();
+        rawDetail = errPayload.message
+          || (Array.isArray(errPayload.errors) && errPayload.errors[0] && errPayload.errors[0].message)
+          || JSON.stringify(errPayload);
+      } catch (parseErr) {
+        rawDetail = await response.text().catch(() => '');
+      }
+
+      let friendly;
+      if (response.status === 401 || response.status === 403) {
+        friendly = 'Clé API refusée.';
+      } else if (response.status === 404) {
+        friendly = 'Compte introuvable.';
+      } else if (response.status === 429) {
+        friendly = 'Trop de requêtes pour le moment, réessaie dans une minute.';
+      } else if (response.status === 503) {
+        friendly = 'L\'API Riot semble indisponible côté HenrikDev, réessaie plus tard.';
+      } else {
+        friendly = `Erreur de l'API (code ${response.status}).`;
+      }
+
+      throw new Error(rawDetail ? `${friendly} Détail technique : ${rawDetail}` : friendly);
     }
 
     const payload = await response.json();
@@ -5602,12 +5621,13 @@ async function importValorantMatches() {
 
     const importedIds = getImportedMatchIds();
     let addedCount = 0;
-    let skippedCount = 0;
+    let skippedAlreadyImported = 0;
+    let skippedNoPlayerMatch = 0;
 
     rawMatches.forEach(match => {
       const matchId = match.metadata && match.metadata.matchid;
-      if (!matchId || importedIds.has(matchId)) {
-        if (matchId) skippedCount += 1;
+      if (matchId && importedIds.has(matchId)) {
+        skippedAlreadyImported += 1;
         return;
       }
 
@@ -5618,7 +5638,7 @@ async function importValorantMatches() {
         p.tag.toLowerCase() === creds.tag.toLowerCase()
       );
       if (!me) {
-        skippedCount += 1;
+        skippedNoPlayerMatch += 1;
         return;
       }
 
@@ -5652,14 +5672,22 @@ async function importValorantMatches() {
       renderMatches();
     }
 
-    if (addedCount === 0) {
-      showValorantStatus('Aucune nouvelle partie à importer (déjà à jour).', false);
-    } else {
+    if (addedCount > 0) {
       showValorantStatus(
         `${addedCount} partie${addedCount > 1 ? 's' : ''} importée${addedCount > 1 ? 's' : ''}` +
-        (skippedCount > 0 ? ` (${skippedCount} déjà connue${skippedCount > 1 ? 's' : ''} ou ignorée${skippedCount > 1 ? 's' : ''}).` : '.'),
+        (skippedAlreadyImported > 0 ? ` (${skippedAlreadyImported} déjà connue${skippedAlreadyImported > 1 ? 's' : ''}).` : '.'),
         false
       );
+    } else if (skippedNoPlayerMatch > 0 && skippedAlreadyImported === 0) {
+      // Des parties existent bien côté API, mais aucune ne contient un joueur
+      // correspondant exactement au pseudo/tag saisis : c'est presque toujours
+      // une faute de frappe (majuscules, tag mal recopié, espace en trop...).
+      showValorantStatus(
+        `${rawMatches.length} partie${rawMatches.length > 1 ? 's' : ''} reçue${rawMatches.length > 1 ? 's' : ''} de l'API, mais aucune ne correspond exactement à "${creds.name}#${creds.tag}". Vérifie l'orthographe (majuscules comprises) de ton pseudo et de ton tag, sans espace ni "#".`,
+        true
+      );
+    } else {
+      showValorantStatus('Aucune nouvelle partie à importer (déjà à jour).', false);
     }
   } catch (err) {
     const message = (err && err.message) ? err.message
