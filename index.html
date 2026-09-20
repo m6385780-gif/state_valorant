@@ -2879,16 +2879,16 @@ input[type="checkbox"]:focus-visible {
 </header>
 
 <nav class="quicknav" aria-label="Navigation rapide">
-  <a href="#grid">01 · Roster</a>
-  <a href="#journal-section">02 · Journal</a>
-  <a href="#history-section">03 · Historique</a>
-  <a href="#perf-section">04 · Performance</a>
-  <a href="#map-stats-section">05 · Cartes</a>
-  <a href="#weekly-section">06 · Semaine</a>
-  <a href="#role-stats-section">07 · Rôles</a>
-  <a href="#objectives-section">08 · Objectifs</a>
-  <a href="#badges-section">09 · Badges</a>
-  <a href="#valorant-import-section">10 · Compte Valorant</a>
+  <a href="#valorant-import-section">01 · Compte Valorant</a>
+  <a href="#grid">02 · Roster</a>
+  <a href="#journal-section">03 · Journal</a>
+  <a href="#history-section">04 · Historique</a>
+  <a href="#perf-section">05 · Performance</a>
+  <a href="#map-stats-section">06 · Cartes</a>
+  <a href="#weekly-section">07 · Semaine</a>
+  <a href="#role-stats-section">08 · Rôles</a>
+  <a href="#objectives-section">09 · Objectifs</a>
+  <a href="#badges-section">10 · Badges</a>
   <a href="#backup-section">11 · Sauvegarde</a>
 </nav>
 
@@ -2930,6 +2930,73 @@ input[type="checkbox"]:focus-visible {
   </div>
 </section>
 
+<section class="match-section hud-frame reveal" id="valorant-import-section">
+  <div class="section-header">
+    <span class="section-index">01</span>
+    <h2>Compte Valorant</h2>
+  </div>
+  <p class="backup-note">
+    Connecte ton compte pour importer automatiquement tes 10 dernières parties. Tes identifiants (clé API, pseudo, tag) restent
+    enregistrés uniquement dans <strong>ce navigateur</strong> — ils ne sont jamais partagés avec les autres visiteurs du site,
+    même si vous utilisez le même lien. Chaque personne doit saisir ses propres identifiants.
+  </p>
+
+  <details class="valorant-howto">
+    <summary>Comment trouver ces informations ?</summary>
+    <div class="valorant-howto-body">
+      <h3>Clé API HenrikDev</h3>
+      <ol>
+        <li>Rejoins le Discord HenrikDev : <a href="https://discord.com/invite/X3GaVkX2YN" target="_blank" rel="noopener noreferrer">discord.com/invite/X3GaVkX2YN</a></li>
+        <li>Dans le salon dédié à la génération de clé, choisis <strong>« VALORANT (Basic Key) »</strong> dans le menu déroulant du bot.</li>
+        <li>Le bot affiche immédiatement une clé (une longue chaîne de caractères) : copie-la et colle-la dans le champ « Clé API HenrikDev » ci-dessus.</li>
+        <li>Tu peux la retrouver plus tard sur <a href="https://api.henrikdev.xyz/dashboard/" target="_blank" rel="noopener noreferrer">api.henrikdev.xyz/dashboard</a> en te connectant avec le même compte Discord.</li>
+      </ol>
+
+      <h3>Pseudo Riot et Tag</h3>
+      <ol>
+        <li>Ouvre le client Valorant (ou le launcher Riot).</li>
+        <li>En haut à droite, à côté de ton nom, ton Riot ID complet s'affiche sous la forme <code>TonPseudo#1234</code>.</li>
+        <li>Tout ce qui précède le <code>#</code> va dans « Pseudo Riot ».</li>
+        <li>Tout ce qui suit le <code>#</code> (sans le <code>#</code>) va dans « Tag ».</li>
+      </ol>
+      <p class="valorant-howto-example">Exemple : pour le Riot ID <code>Henrik3#EUW3</code>, mets <code>Henrik3</code> dans Pseudo et <code>EUW3</code> dans Tag.</p>
+    </div>
+  </details>
+
+  <form id="valorant-creds-form" class="match-form" style="margin-top:14px;">
+    <div class="field" style="flex:2; min-width:220px;">
+      <label for="valorant-api-key">Clé API HenrikDev</label>
+      <input type="password" id="valorant-api-key" placeholder="Obtenue sur le Discord HenrikDev" autocomplete="off">
+    </div>
+    <div class="field">
+      <label for="valorant-riot-name">Pseudo Riot</label>
+      <input type="text" id="valorant-riot-name" placeholder="Ex : Henrik3" autocomplete="off">
+    </div>
+    <div class="field">
+      <label for="valorant-riot-tag">Tag</label>
+      <input type="text" id="valorant-riot-tag" placeholder="Ex : EUW3" autocomplete="off">
+    </div>
+    <div class="field">
+      <label for="valorant-region">Serveur</label>
+      <select id="valorant-region">
+        <option value="eu">Europe</option>
+        <option value="na">Amérique du Nord</option>
+        <option value="latam">Amérique Latine</option>
+        <option value="br">Brésil</option>
+        <option value="ap">Asie-Pacifique</option>
+        <option value="kr">Corée</option>
+      </select>
+    </div>
+    <button type="submit" class="submit-btn">Sauvegarder mes identifiants</button>
+    <button type="button" class="cancel-btn" id="valorant-forget-btn">Oublier mes identifiants</button>
+  </form>
+
+  <div class="controls" style="margin: 16px 0 0;">
+    <button type="button" id="valorant-import-btn" class="perf-btn">Importer mes 10 dernières parties</button>
+  </div>
+  <p id="valorant-import-status" class="history-note" style="display:none;"></p>
+</section>
+
 <div class="progress-wrap hud-frame">
   <div class="progress-label">
     <span>Progression du roster</span>
@@ -2950,7 +3017,7 @@ input[type="checkbox"]:focus-visible {
 
 <section class="match-section hud-frame reveal" id="journal-section">
   <div class="section-header">
-    <span class="section-index">02</span>
+    <span class="section-index">03</span>
     <h2>Journaliser une partie</h2>
     <button type="button" class="perf-btn small-btn" id="replay-last-btn" disabled>↺ Rejouer les réglages</button>
   </div>
@@ -3018,7 +3085,7 @@ input[type="checkbox"]:focus-visible {
 
 <section class="match-section hud-frame reveal" id="history-section">
   <div class="section-header">
-    <span class="section-index">03</span>
+    <span class="section-index">04</span>
     <h2>Historique des parties</h2>
   </div>
 
@@ -3065,7 +3132,7 @@ input[type="checkbox"]:focus-visible {
 
 <section class="match-section hud-frame reveal" id="perf-section">
   <div class="section-header">
-    <span class="section-index">04</span>
+    <span class="section-index">05</span>
     <h2>Performance dans le temps</h2>
     <div class="perf-filter">
       <label for="perf-agent-filter">Agent</label>
@@ -3110,7 +3177,7 @@ input[type="checkbox"]:focus-visible {
 
 <section class="match-section hud-frame reveal" id="map-stats-section">
   <div class="section-header">
-    <span class="section-index">05</span>
+    <span class="section-index">06</span>
     <h2>Statistiques par carte</h2>
   </div>
   <div class="table-scroll">
@@ -3133,7 +3200,7 @@ input[type="checkbox"]:focus-visible {
 
 <section class="match-section hud-frame reveal" id="weekly-section">
   <div class="section-header">
-    <span class="section-index">06</span>
+    <span class="section-index">07</span>
     <h2>Cette semaine</h2>
   </div>
 
@@ -3161,7 +3228,7 @@ input[type="checkbox"]:focus-visible {
 
 <section class="match-section hud-frame reveal" id="role-stats-section">
   <div class="section-header">
-    <span class="section-index">07</span>
+    <span class="section-index">08</span>
     <h2>Statistiques par rôle</h2>
   </div>
   <div class="table-scroll">
@@ -3184,7 +3251,7 @@ input[type="checkbox"]:focus-visible {
 
 <section class="match-section hud-frame reveal" id="objectives-section">
   <div class="section-header">
-    <span class="section-index">08</span>
+    <span class="section-index">09</span>
     <h2>Objectifs personnels</h2>
     <button type="button" class="perf-btn small-btn" id="add-objective-btn">+ Nouvel objectif</button>
   </div>
@@ -3210,78 +3277,11 @@ input[type="checkbox"]:focus-visible {
 
 <section class="match-section hud-frame reveal" id="badges-section">
   <div class="section-header">
-    <span class="section-index">09</span>
+    <span class="section-index">10</span>
     <h2>Badges &amp; succès</h2>
     <span class="status-label" id="badges-count">0 / 0</span>
   </div>
   <div class="badges-grid" id="badges-grid"></div>
-</section>
-
-<section class="match-section hud-frame reveal" id="valorant-import-section">
-  <div class="section-header">
-    <span class="section-index">10</span>
-    <h2>Compte Valorant</h2>
-  </div>
-  <p class="backup-note">
-    Connecte ton compte pour importer automatiquement tes dernières parties. Tes identifiants (clé API, pseudo, tag) restent
-    enregistrés uniquement dans <strong>ce navigateur</strong> — ils ne sont jamais partagés avec les autres visiteurs du site,
-    même si vous utilisez le même lien. Chaque personne doit saisir ses propres identifiants.
-  </p>
-
-  <details class="valorant-howto">
-    <summary>Comment trouver ces informations ?</summary>
-    <div class="valorant-howto-body">
-      <h3>Clé API HenrikDev</h3>
-      <ol>
-        <li>Rejoins le Discord HenrikDev : <a href="https://discord.com/invite/X3GaVkX2YN" target="_blank" rel="noopener noreferrer">discord.com/invite/X3GaVkX2YN</a></li>
-        <li>Dans le salon dédié à la génération de clé, choisis <strong>« VALORANT (Basic Key) »</strong> dans le menu déroulant du bot.</li>
-        <li>Le bot affiche immédiatement une clé (une longue chaîne de caractères) : copie-la et colle-la dans le champ « Clé API HenrikDev » ci-dessus.</li>
-        <li>Tu peux la retrouver plus tard sur <a href="https://api.henrikdev.xyz/dashboard/" target="_blank" rel="noopener noreferrer">api.henrikdev.xyz/dashboard</a> en te connectant avec le même compte Discord.</li>
-      </ol>
-
-      <h3>Pseudo Riot et Tag</h3>
-      <ol>
-        <li>Ouvre le client Valorant (ou le launcher Riot).</li>
-        <li>En haut à droite, à côté de ton nom, ton Riot ID complet s'affiche sous la forme <code>TonPseudo#1234</code>.</li>
-        <li>Tout ce qui précède le <code>#</code> va dans « Pseudo Riot ».</li>
-        <li>Tout ce qui suit le <code>#</code> (sans le <code>#</code>) va dans « Tag ».</li>
-      </ol>
-      <p class="valorant-howto-example">Exemple : pour le Riot ID <code>Henrik3#EUW3</code>, mets <code>Henrik3</code> dans Pseudo et <code>EUW3</code> dans Tag.</p>
-    </div>
-  </details>
-
-  <form id="valorant-creds-form" class="match-form" style="margin-top:14px;">
-    <div class="field" style="flex:2; min-width:220px;">
-      <label for="valorant-api-key">Clé API HenrikDev</label>
-      <input type="password" id="valorant-api-key" placeholder="Obtenue sur le Discord HenrikDev" autocomplete="off">
-    </div>
-    <div class="field">
-      <label for="valorant-riot-name">Pseudo Riot</label>
-      <input type="text" id="valorant-riot-name" placeholder="Ex : Henrik3" autocomplete="off">
-    </div>
-    <div class="field">
-      <label for="valorant-riot-tag">Tag</label>
-      <input type="text" id="valorant-riot-tag" placeholder="Ex : EUW3" autocomplete="off">
-    </div>
-    <div class="field">
-      <label for="valorant-region">Serveur</label>
-      <select id="valorant-region">
-        <option value="eu">Europe</option>
-        <option value="na">Amérique du Nord</option>
-        <option value="latam">Amérique Latine</option>
-        <option value="br">Brésil</option>
-        <option value="ap">Asie-Pacifique</option>
-        <option value="kr">Corée</option>
-      </select>
-    </div>
-    <button type="submit" class="submit-btn">Sauvegarder mes identifiants</button>
-    <button type="button" class="cancel-btn" id="valorant-forget-btn">Oublier mes identifiants</button>
-  </form>
-
-  <div class="controls" style="margin: 16px 0 0;">
-    <button type="button" id="valorant-import-btn" class="perf-btn">Importer mes dernières parties</button>
-  </div>
-  <p id="valorant-import-status" class="history-note" style="display:none;"></p>
 </section>
 
 <section class="match-section hud-frame reveal" id="backup-section">
@@ -5573,10 +5573,10 @@ async function importValorantMatches() {
   valorantImportBtn.disabled = true;
   const originalLabel = valorantImportBtn.textContent;
   valorantImportBtn.textContent = 'Import en cours…';
-  showValorantStatus('Récupération de tes dernières parties…', false);
+  showValorantStatus('Récupération de tes 10 dernières parties…', false);
 
   try {
-    const url = `https://api.henrikdev.xyz/valorant/v3/matches/${encodeURIComponent(creds.region)}/${encodeURIComponent(creds.name)}/${encodeURIComponent(creds.tag)}?size=15`;
+    const url = `https://api.henrikdev.xyz/valorant/v3/matches/${encodeURIComponent(creds.region)}/${encodeURIComponent(creds.name)}/${encodeURIComponent(creds.tag)}?size=10`;
     const response = await fetch(url, {
       headers: { 'Authorization': creds.apiKey }
     });
@@ -5624,7 +5624,12 @@ async function importValorantMatches() {
     let skippedAlreadyImported = 0;
     let skippedNoPlayerMatch = 0;
 
-    rawMatches.forEach(match => {
+    // L'API renvoie les parties de la plus récente à la plus ancienne, alors
+    // que le journal attend l'ordre inverse (comme une saisie manuelle : la
+    // plus récente est toujours ajoutée en dernier). On les traite donc à
+    // l'envers, pour que la plus récente se retrouve en dernière position
+    // dans le tableau `matches`, et s'affiche donc en premier une fois trié.
+    rawMatches.slice().reverse().forEach(match => {
       const matchId = match.metadata && match.metadata.matchid;
       if (matchId && importedIds.has(matchId)) {
         skippedAlreadyImported += 1;
