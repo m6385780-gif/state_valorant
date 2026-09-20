@@ -2872,7 +2872,7 @@ input[type="checkbox"]:focus-visible {
 <header class="masthead">
   <div class="masthead-eyebrow">
     <span class="eyebrow-tag">// PROTOCOLE.AGENT</span>
-    <span class="eyebrow-tag">V.32</span>
+    <span class="eyebrow-tag">V.33</span>
   </div>
   <h1>ROSTER<span class="accent-dot">_</span>TRACKER</h1>
   <p class="subtitle">Verrouille tes agents. Journalise tes affrontements.</p>
@@ -2936,7 +2936,7 @@ input[type="checkbox"]:focus-visible {
     <h2>Compte Valorant</h2>
   </div>
   <p class="backup-note">
-    Connecte ton compte pour importer automatiquement tes 10 dernières parties. Tes identifiants (clé API, pseudo, tag) restent
+    Connecte ton compte pour importer automatiquement tes dernières parties. Tes identifiants (clé API, pseudo, tag) restent
     enregistrés uniquement dans <strong>ce navigateur</strong> — ils ne sont jamais partagés avec les autres visiteurs du site,
     même si vous utilisez le même lien. Chaque personne doit saisir ses propres identifiants.
   </p>
@@ -2991,8 +2991,16 @@ input[type="checkbox"]:focus-visible {
     <button type="button" class="cancel-btn" id="valorant-forget-btn">Oublier mes identifiants</button>
   </form>
 
-  <div class="controls" style="margin: 16px 0 0;">
-    <button type="button" id="valorant-import-btn" class="perf-btn">Importer mes 10 dernières parties</button>
+  <div class="controls" style="margin: 16px 0 0; align-items: center; flex-wrap: wrap;">
+    <div class="field" style="min-width:170px;">
+      <label for="valorant-import-size">Nombre de parties</label>
+      <select id="valorant-import-size">
+        <option value="1">1 partie</option>
+        <option value="5">5 parties</option>
+        <option value="10" selected>10 parties</option>
+      </select>
+    </div>
+    <button type="button" id="valorant-import-btn" class="perf-btn">Importer</button>
   </div>
   <p id="valorant-import-status" class="history-note" style="display:none;"></p>
 </section>
@@ -5452,6 +5460,7 @@ const valorantRiotTagInput = document.getElementById('valorant-riot-tag');
 const valorantRegionSelect = document.getElementById('valorant-region');
 const valorantForgetBtn = document.getElementById('valorant-forget-btn');
 const valorantImportBtn = document.getElementById('valorant-import-btn');
+const valorantImportSizeSelect = document.getElementById('valorant-import-size');
 const valorantImportStatus = document.getElementById('valorant-import-status');
 
 function loadValorantCreds() {
@@ -5570,13 +5579,20 @@ async function importValorantMatches() {
     return;
   }
 
+  // Nombre de parties choisi dans le sélecteur (1, 5 ou 10). On retombe sur
+  // 10 par défaut si jamais le champ est absent ou contient une valeur invalide.
+  const requestedSize = valorantImportSizeSelect
+    ? Math.min(10, Math.max(1, parseInt(valorantImportSizeSelect.value, 10) || 10))
+    : 10;
+  const sizeLabel = `${requestedSize} partie${requestedSize > 1 ? 's' : ''}`;
+
   valorantImportBtn.disabled = true;
   const originalLabel = valorantImportBtn.textContent;
   valorantImportBtn.textContent = 'Import en cours…';
-  showValorantStatus('Récupération de tes 10 dernières parties…', false);
+  showValorantStatus(`Récupération de ${requestedSize === 1 ? 'ta dernière partie' : `tes ${requestedSize} dernières parties`}…`, false);
 
   try {
-    const url = `https://api.henrikdev.xyz/valorant/v3/matches/${encodeURIComponent(creds.region)}/${encodeURIComponent(creds.name)}/${encodeURIComponent(creds.tag)}?size=10`;
+    const url = `https://api.henrikdev.xyz/valorant/v3/matches/${encodeURIComponent(creds.region)}/${encodeURIComponent(creds.name)}/${encodeURIComponent(creds.tag)}?size=${requestedSize}`;
     const response = await fetch(url, {
       headers: { 'Authorization': creds.apiKey }
     });
