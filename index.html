@@ -885,6 +885,48 @@ input[type="checkbox"] {
   opacity: 0.6;
 }
 
+#gauntlet-chart {
+  width: 100%;
+  height: 220px;
+  display: block;
+}
+
+#gauntlet-chart .grid-line {
+  stroke: var(--border);
+  stroke-width: 1;
+  stroke-dasharray: 3 4;
+}
+
+#gauntlet-chart .placement-line {
+  fill: none;
+  stroke: var(--purple);
+  stroke-width: 2.5;
+  filter: drop-shadow(0 0 5px var(--purple-glow));
+}
+
+#gauntlet-chart .placement-fill {
+  fill: url(#gauntletGradient);
+  opacity: 0.3;
+}
+
+#gauntlet-chart .placement-point {
+  fill: var(--bg);
+  stroke: var(--purple);
+  stroke-width: 2;
+  filter: drop-shadow(0 0 4px var(--purple-glow));
+}
+
+#gauntlet-chart .placement-point.is-first {
+  stroke: #ffd700;
+  filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.6));
+}
+
+#gauntlet-chart .axis-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  fill: var(--muted);
+}
+
 .perf-stats {
   display: flex;
   flex-direction: column;
@@ -2884,12 +2926,13 @@ input[type="checkbox"]:focus-visible {
   <a href="#journal-section">03 · Journal</a>
   <a href="#history-section">04 · Historique</a>
   <a href="#perf-section">05 · Performance</a>
-  <a href="#map-stats-section">06 · Cartes</a>
-  <a href="#weekly-section">07 · Semaine</a>
-  <a href="#role-stats-section">08 · Rôles</a>
-  <a href="#objectives-section">09 · Objectifs</a>
-  <a href="#badges-section">10 · Badges</a>
-  <a href="#backup-section">11 · Sauvegarde</a>
+  <a href="#gauntlet-section">06 · Gauntlet</a>
+  <a href="#map-stats-section">07 · Cartes</a>
+  <a href="#weekly-section">08 · Semaine</a>
+  <a href="#role-stats-section">09 · Rôles</a>
+  <a href="#objectives-section">10 · Objectifs</a>
+  <a href="#badges-section">11 · Badges</a>
+  <a href="#backup-section">12 · Sauvegarde</a>
 </nav>
 
 <section class="status-bar reveal" aria-label="Statut de mission">
@@ -3038,6 +3081,7 @@ input[type="checkbox"]:focus-visible {
       <label for="match-map">Carte</label>
       <select id="match-map" required>
         <option value="Abyss">Abyss</option>
+        <option value="Arène">Arène</option>
         <option value="Ascent">Ascent</option>
         <option value="Bind">Bind</option>
         <option value="Breeze">Breeze</option>
@@ -3068,13 +3112,17 @@ input[type="checkbox"]:focus-visible {
         <option value="Personnalisée">Personnalisée</option>
       </select>
     </div>
-    <div class="field field-num">
+    <div class="field field-num" id="match-score-team-field">
       <label for="match-score-team">Score équipe</label>
       <input type="number" id="match-score-team" min="0" max="99" value="0" inputmode="numeric" required>
     </div>
-    <div class="field field-num">
+    <div class="field field-num" id="match-score-enemy-field">
       <label for="match-score-enemy">Score adverse</label>
       <input type="number" id="match-score-enemy" min="0" max="99" value="0" inputmode="numeric" required>
+    </div>
+    <div class="field field-num" id="match-placement-field" style="display:none;">
+      <label for="match-placement">Place obtenue</label>
+      <input type="number" id="match-placement" min="1" max="8" value="1" inputmode="numeric">
     </div>
     <div class="field field-num">
       <label for="match-kills">Élim.</label>
@@ -3185,9 +3233,38 @@ input[type="checkbox"]:focus-visible {
   </div>
 </section>
 
-<section class="match-section hud-frame reveal" id="map-stats-section">
+<section class="match-section hud-frame reveal" id="gauntlet-section">
   <div class="section-header">
     <span class="section-index">06</span>
+    <h2>Gauntlet: Glitched — Classement</h2>
+  </div>
+
+  <div class="perf-layout">
+    <div class="perf-chart-wrap">
+      <svg id="gauntlet-chart" viewBox="0 0 600 220" preserveAspectRatio="none" role="img" aria-label="Évolution de la place obtenue en Gauntlet: Glitched"></svg>
+      <p id="gauntlet-empty" class="empty-state">Journalise au moins une partie en Gauntlet: Glitched (avec la place obtenue) pour voir ton classement.</p>
+    </div>
+
+    <div class="perf-stats">
+      <div class="perf-stat-card">
+        <span class="status-label">Meilleure place</span>
+        <span class="status-value" id="gauntlet-best">—</span>
+      </div>
+      <div class="perf-stat-card">
+        <span class="status-label">Place moyenne</span>
+        <span class="status-value" id="gauntlet-avg">—</span>
+      </div>
+      <div class="perf-stat-card">
+        <span class="status-label">1ères places</span>
+        <span class="status-value" id="gauntlet-wins">—</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="match-section hud-frame reveal" id="map-stats-section">
+  <div class="section-header">
+    <span class="section-index">07</span>
     <h2>Statistiques par carte</h2>
   </div>
   <div class="table-scroll">
@@ -3210,7 +3287,7 @@ input[type="checkbox"]:focus-visible {
 
 <section class="match-section hud-frame reveal" id="weekly-section">
   <div class="section-header">
-    <span class="section-index">07</span>
+    <span class="section-index">08</span>
     <h2>Cette semaine</h2>
   </div>
 
@@ -3238,7 +3315,7 @@ input[type="checkbox"]:focus-visible {
 
 <section class="match-section hud-frame reveal" id="role-stats-section">
   <div class="section-header">
-    <span class="section-index">08</span>
+    <span class="section-index">09</span>
     <h2>Statistiques par rôle</h2>
   </div>
   <div class="table-scroll">
@@ -3261,7 +3338,7 @@ input[type="checkbox"]:focus-visible {
 
 <section class="match-section hud-frame reveal" id="objectives-section">
   <div class="section-header">
-    <span class="section-index">09</span>
+    <span class="section-index">10</span>
     <h2>Objectifs personnels</h2>
     <button type="button" class="perf-btn small-btn" id="add-objective-btn">+ Nouvel objectif</button>
   </div>
@@ -3287,7 +3364,7 @@ input[type="checkbox"]:focus-visible {
 
 <section class="match-section hud-frame reveal" id="badges-section">
   <div class="section-header">
-    <span class="section-index">10</span>
+    <span class="section-index">11</span>
     <h2>Badges &amp; succès</h2>
     <span class="status-label" id="badges-count">0 / 0</span>
   </div>
@@ -3296,7 +3373,7 @@ input[type="checkbox"]:focus-visible {
 
 <section class="match-section hud-frame reveal" id="backup-section">
   <div class="section-header">
-    <span class="section-index">11</span>
+    <span class="section-index">12</span>
     <h2>Sauvegarde des données</h2>
   </div>
   <p class="backup-note">Tes données sont stockées uniquement dans ce navigateur. Exporte-les pour les garder en sécurité ou les transférer sur un autre appareil.</p>
@@ -3505,7 +3582,20 @@ function refreshAgentSelect() {
     opt.disabled = true;
     opt.selected = true;
     agentSelect.appendChild(opt);
-  } else if (agentSelect.querySelector(`option[value="${previousValue}"]`)) {
+  }
+
+  // Robo-Agent n'est pas un agent à débloquer : en mode Gauntlet: Glitched,
+  // on pioche des capacités hybrides au lieu de choisir un agent classique.
+  // Il reste donc toujours disponible, indépendamment du roster possédé.
+  const specialGroup = document.createElement('optgroup');
+  specialGroup.label = 'Spécial (Gauntlet: Glitched)';
+  const roboOpt = document.createElement('option');
+  roboOpt.value = 'Robo-Agent';
+  roboOpt.textContent = 'Robo-Agent';
+  specialGroup.appendChild(roboOpt);
+  agentSelect.appendChild(specialGroup);
+
+  if (agentSelect.querySelector(`option[value="${previousValue}"]`)) {
     agentSelect.value = previousValue;
   }
 }
@@ -3519,6 +3609,31 @@ const historyNote = document.getElementById('history-note');
 const matchSubmitBtn = document.getElementById('match-submit-btn');
 const cancelEditBtn = document.getElementById('cancel-edit-btn');
 const replayLastBtn = document.getElementById('replay-last-btn');
+
+// Gauntlet: Glitched n'a pas de score équipe/adverse classique : on y suit
+// plutôt la PLACE obtenue (classement face aux autres duos). On bascule
+// donc les champs du formulaire selon le mode choisi.
+const GAUNTLET_MODE = 'Gauntlet: Glitched';
+const matchModeSelect = document.getElementById('match-mode');
+const scoreTeamField = document.getElementById('match-score-team-field');
+const scoreEnemyField = document.getElementById('match-score-enemy-field');
+const placementField = document.getElementById('match-placement-field');
+const scoreTeamInput = document.getElementById('match-score-team');
+const scoreEnemyInput = document.getElementById('match-score-enemy');
+const placementInput = document.getElementById('match-placement');
+
+function updateMatchFieldsForMode() {
+  const isGauntlet = matchModeSelect.value === GAUNTLET_MODE;
+  scoreTeamField.style.display = isGauntlet ? 'none' : '';
+  scoreEnemyField.style.display = isGauntlet ? 'none' : '';
+  placementField.style.display = isGauntlet ? '' : 'none';
+  scoreTeamInput.required = !isGauntlet;
+  scoreEnemyInput.required = !isGauntlet;
+  placementInput.required = isGauntlet;
+}
+
+matchModeSelect.addEventListener('change', updateMatchFieldsForMode);
+updateMatchFieldsForMode();
 
 // Ajoute temporairement un agent non déverrouillé à la liste déroulante,
 // pour pouvoir modifier / rejouer une partie jouée avec un agent qu'on a
@@ -3539,9 +3654,11 @@ function resetMatchFormFields() {
   matchForm.reset();
   document.getElementById('match-score-team').value = 0;
   document.getElementById('match-score-enemy').value = 0;
+  document.getElementById('match-placement').value = 1;
   document.getElementById('match-kills').value = 0;
   document.getElementById('match-deaths').value = 0;
   document.getElementById('match-assists').value = 0;
+  updateMatchFieldsForMode();
 }
 
 /* ---------- Modifier une partie existante ---------- */
@@ -3557,8 +3674,10 @@ function startEditMatch(id) {
   ensureAgentOption(match.agent);
   document.getElementById('match-map').value = match.map || '';
   document.getElementById('match-mode').value = match.mode || '';
+  updateMatchFieldsForMode();
   document.getElementById('match-score-team').value = match.scoreTeam ?? 0;
   document.getElementById('match-score-enemy').value = match.scoreEnemy ?? 0;
+  document.getElementById('match-placement').value = match.placement ?? 1;
   document.getElementById('match-kills').value = match.kills ?? 0;
   document.getElementById('match-deaths').value = match.deaths ?? 0;
   document.getElementById('match-assists').value = match.assists ?? 0;
@@ -3585,8 +3704,10 @@ matchForm.addEventListener('submit', (e) => {
   const agent = document.getElementById('match-agent').value;
   const map = document.getElementById('match-map').value;
   const mode = document.getElementById('match-mode').value;
-  const scoreTeam = parseInt(document.getElementById('match-score-team').value, 10) || 0;
-  const scoreEnemy = parseInt(document.getElementById('match-score-enemy').value, 10) || 0;
+  const isGauntlet = mode === GAUNTLET_MODE;
+  const scoreTeam = isGauntlet ? undefined : (parseInt(document.getElementById('match-score-team').value, 10) || 0);
+  const scoreEnemy = isGauntlet ? undefined : (parseInt(document.getElementById('match-score-enemy').value, 10) || 0);
+  const placement = isGauntlet ? (parseInt(document.getElementById('match-placement').value, 10) || 1) : undefined;
   const kills = parseInt(document.getElementById('match-kills').value, 10) || 0;
   const deaths = parseInt(document.getElementById('match-deaths').value, 10) || 0;
   const assists = parseInt(document.getElementById('match-assists').value, 10) || 0;
@@ -3594,14 +3715,14 @@ matchForm.addEventListener('submit', (e) => {
   if (editingMatchId !== null) {
     const idx = matches.findIndex(m => m.id === editingMatchId);
     if (idx !== -1) {
-      matches[idx] = { ...matches[idx], agent, map, mode, scoreTeam, scoreEnemy, kills, deaths, assists };
+      matches[idx] = { ...matches[idx], agent, map, mode, scoreTeam, scoreEnemy, placement, kills, deaths, assists };
     }
     editingMatchId = null;
     matchSubmitBtn.textContent = 'Ajouter la partie';
     cancelEditBtn.style.display = 'none';
   } else {
     matchIdCounter += 1;
-    matches.push({ id: matchIdCounter, agent, map, mode, scoreTeam, scoreEnemy, kills, deaths, assists, timestamp: Date.now() });
+    matches.push({ id: matchIdCounter, agent, map, mode, scoreTeam, scoreEnemy, placement, kills, deaths, assists, timestamp: Date.now() });
   }
 
   renderMatches();
@@ -3620,8 +3741,10 @@ replayLastBtn.addEventListener('click', () => {
   ensureAgentOption(last.agent);
   document.getElementById('match-map').value = last.map || '';
   document.getElementById('match-mode').value = last.mode || '';
+  updateMatchFieldsForMode();
   document.getElementById('match-score-team').value = 0;
   document.getElementById('match-score-enemy').value = 0;
+  document.getElementById('match-placement').value = 1;
   document.getElementById('match-kills').value = 0;
   document.getElementById('match-deaths').value = 0;
   document.getElementById('match-assists').value = 0;
@@ -3717,6 +3840,9 @@ function updateStreakDisplay() {
 }
 
 function matchResult(match) {
+  if (match.placement !== undefined && match.placement !== null) {
+    return match.placement === 1 ? 'Victoire' : 'Défaite';
+  }
   if (match.scoreTeam === undefined || match.scoreEnemy === undefined) return null;
   if (match.scoreTeam > match.scoreEnemy) return 'Victoire';
   if (match.scoreTeam < match.scoreEnemy) return 'Défaite';
@@ -3819,7 +3945,9 @@ function renderMatchHistoryTable() {
 
     const tdScore = document.createElement('td');
     tdScore.className = 'score-cell';
-    tdScore.textContent = (match.scoreTeam !== undefined && match.scoreEnemy !== undefined)
+    tdScore.textContent = (match.placement !== undefined && match.placement !== null)
+      ? `Place ${match.placement}`
+      : (match.scoreTeam !== undefined && match.scoreEnemy !== undefined)
       ? `${match.scoreTeam} - ${match.scoreEnemy}`
       : '—';
 
@@ -3907,6 +4035,7 @@ function renderMatches() {
   updateStreakDisplay();
   refreshPerfAgentFilter();
   renderPerformance();
+  renderGauntletPlacement();
   renderMapStats();
   renderRoleStats();
   renderAgentSpotlight();
@@ -4220,6 +4349,130 @@ function deleteMatch(id) {
 
 function saveMatches() {
   localStorage.setItem(STORAGE_KEY_MATCHES, JSON.stringify(matches));
+}
+
+/* ---------- Classement Gauntlet: Glitched (place obtenue) ---------- */
+
+const gauntletChart = document.getElementById('gauntlet-chart');
+const gauntletEmpty = document.getElementById('gauntlet-empty');
+const gauntletBestEl = document.getElementById('gauntlet-best');
+const gauntletAvgEl = document.getElementById('gauntlet-avg');
+const gauntletWinsEl = document.getElementById('gauntlet-wins');
+
+function renderGauntletPlacement() {
+  gauntletChart.innerHTML = '';
+
+  const gauntletMatches = matches.filter(m =>
+    m.mode === GAUNTLET_MODE && m.placement !== undefined && m.placement !== null
+  );
+
+  if (gauntletMatches.length === 0) {
+    gauntletEmpty.style.display = 'block';
+    gauntletChart.style.display = 'none';
+    gauntletBestEl.textContent = '—';
+    gauntletAvgEl.textContent = '—';
+    gauntletWinsEl.textContent = '—';
+    return;
+  }
+
+  gauntletEmpty.style.display = 'none';
+  gauntletChart.style.display = 'block';
+
+  const chronological = gauntletMatches.slice(-MAX_CHART_MATCHES);
+  const placements = chronological.map(m => m.placement);
+
+  const maxPlacement = Math.max(...placements, 4);
+  const minPlacement = 1;
+
+  const width = 600;
+  const height = 220;
+  const padX = 34;
+  const padTop = 16;
+  const padBottom = 26;
+  const plotW = width - padX * 2;
+  const plotH = height - padTop - padBottom;
+
+  const xFor = (i) => padX + (placements.length === 1 ? plotW / 2 : (i / (placements.length - 1)) * plotW);
+  // Axe inversé : la 1ère place (meilleure) est en haut du graphique.
+  const yFor = (v) => padTop + ((v - minPlacement) / (maxPlacement - minPlacement || 1)) * plotH;
+
+  const defs = document.createElementNS(SVG_NS, 'defs');
+  const gradient = document.createElementNS(SVG_NS, 'linearGradient');
+  gradient.setAttribute('id', 'gauntletGradient');
+  gradient.setAttribute('x1', '0');
+  gradient.setAttribute('y1', '0');
+  gradient.setAttribute('x2', '0');
+  gradient.setAttribute('y2', '1');
+  const stop1 = document.createElementNS(SVG_NS, 'stop');
+  stop1.setAttribute('offset', '0%');
+  stop1.setAttribute('stop-color', '#b026ff');
+  stop1.setAttribute('stop-opacity', '0.5');
+  const stop2 = document.createElementNS(SVG_NS, 'stop');
+  stop2.setAttribute('offset', '100%');
+  stop2.setAttribute('stop-color', '#b026ff');
+  stop2.setAttribute('stop-opacity', '0');
+  gradient.appendChild(stop1);
+  gradient.appendChild(stop2);
+  defs.appendChild(gradient);
+  gauntletChart.appendChild(defs);
+
+  // Lignes de grille : 1ère place, place médiane, pire place du lot
+  const midPlacement = Math.round((minPlacement + maxPlacement) / 2);
+  [...new Set([minPlacement, midPlacement, maxPlacement])].forEach(val => {
+    const y = yFor(val);
+    const line = document.createElementNS(SVG_NS, 'line');
+    line.setAttribute('class', 'grid-line');
+    line.setAttribute('x1', padX);
+    line.setAttribute('x2', width - padX);
+    line.setAttribute('y1', y);
+    line.setAttribute('y2', y);
+    gauntletChart.appendChild(line);
+
+    const label = document.createElementNS(SVG_NS, 'text');
+    label.setAttribute('class', 'axis-label');
+    label.setAttribute('x', 4);
+    label.setAttribute('y', y + 3);
+    label.textContent = `${val}e`;
+    gauntletChart.appendChild(label);
+  });
+
+  let pathD = '';
+  placements.forEach((p, i) => {
+    const x = xFor(i);
+    const y = yFor(p);
+    pathD += (i === 0 ? `M ${x} ${y}` : ` L ${x} ${y}`);
+  });
+  const areaD = `${pathD} L ${xFor(placements.length - 1)} ${padTop + plotH} L ${xFor(0)} ${padTop + plotH} Z`;
+
+  const area = document.createElementNS(SVG_NS, 'path');
+  area.setAttribute('class', 'placement-fill');
+  area.setAttribute('d', areaD);
+  gauntletChart.appendChild(area);
+
+  const path = document.createElementNS(SVG_NS, 'path');
+  path.setAttribute('class', 'placement-line');
+  path.setAttribute('d', pathD);
+  gauntletChart.appendChild(path);
+
+  placements.forEach((p, i) => {
+    const circle = document.createElementNS(SVG_NS, 'circle');
+    circle.setAttribute('class', `placement-point${p === 1 ? ' is-first' : ''}`);
+    circle.setAttribute('cx', xFor(i));
+    circle.setAttribute('cy', yFor(p));
+    circle.setAttribute('r', 3.2);
+    const title = document.createElementNS(SVG_NS, 'title');
+    title.textContent = `Partie ${i + 1} — ${chronological[i].agent} — Place ${p}`;
+    circle.appendChild(title);
+    gauntletChart.appendChild(circle);
+  });
+
+  const best = Math.min(...placements);
+  const avg = (placements.reduce((a, b) => a + b, 0) / placements.length).toFixed(1);
+  const wins = placements.filter(p => p === 1).length;
+
+  gauntletBestEl.textContent = `${best}e`;
+  gauntletAvgEl.textContent = `${avg}e`;
+  gauntletWinsEl.textContent = `${wins} / ${placements.length}`;
 }
 
 /* ---------- Statistiques par carte ---------- */
@@ -5003,7 +5256,7 @@ function immortalStreakCount() {
   return streak;
 }
 
-const ALL_MAPS = ['Abyss', 'Ascent', 'Bind', 'Breeze', 'Corrode', 'Fracture', 'Haven', 'Icebox', 'Lotus', 'Pearl', 'Split', 'Summit', 'Sunset'];
+const ALL_MAPS = ['Abyss', 'Arène', 'Ascent', 'Bind', 'Breeze', 'Corrode', 'Fracture', 'Haven', 'Icebox', 'Lotus', 'Pearl', 'Split', 'Summit', 'Sunset'];
 
 function allMapsPlayed() {
   const played = new Set(matches.map(m => m.map).filter(Boolean));
